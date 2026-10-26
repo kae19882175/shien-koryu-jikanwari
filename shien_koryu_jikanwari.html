@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>支援級の時間割メーカー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: 上に学校・児童生徒の切替、中央に時間割の表と編集パネル。印刷用のシートは画面とは別の白黒設計。 */
+:root{
+  --bg:#f1f4f3; --surface:#ffffff; --ink:#1b2a2d; --muted:#586b6f; --line:#ccd7d5; --soft:#e7eeec;
+  --accent:#0e6a6d; --accent-ink:#ffffff;
+  --exch:#1d57a6; --exch-bg:#e7effb;
+  --sup:#2b7a4b; --sup-bg:#e4f3ea;
+  --oth:#8a5a00; --oth-bg:#fbf0d6;
+  --unset:#b3261e; --unset-bg:#fdecea;
+  --warn:#8a5a00; --warn-bg:#fff4d6;
+  --font-d:'Zen Maru Gothic','Hiragino Maru Gothic ProN','Yu Gothic','Meiryo',sans-serif;
+  --font-b:'BIZ UDPGothic','Hiragino Sans','Yu Gothic','Meiryo',sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121a1b; --surface:#1a2425; --ink:#e4eeed; --muted:#9ab0b2; --line:#33474a; --soft:#223133;
+    --accent:#4fc3c6; --accent-ink:#082123;
+    --exch:#8bb7f0; --exch-bg:#1c2a40; --sup:#7ccf9b; --sup-bg:#18301f;
+    --oth:#e5b85c; --oth-bg:#352a10; --unset:#ff8f86; --unset-bg:#3a1c1a;
+    --warn:#e5b85c; --warn-bg:#352a10; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121a1b; --surface:#1a2425; --ink:#e4eeed; --muted:#9ab0b2; --line:#33474a; --soft:#223133;
+  --accent:#4fc3c6; --accent-ink:#082123;
+  --exch:#8bb7f0; --exch-bg:#1c2a40; --sup:#7ccf9b; --sup-bg:#18301f;
+  --oth:#e5b85c; --oth-bg:#352a10; --unset:#ff8f86; --unset-bg:#3a1c1a;
+  --warn:#e5b85c; --warn-bg:#352a10; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 var(--font-b);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 40px}
+.wrap{max-width:1240px;margin:0 auto}
+h1,h2,h3{font-family:var(--font-d);margin:0;text-wrap:balance}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.top{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:flex-end;justify-content:space-between;padding:8px 0 10px}
+.top h1{font-size:24px;letter-spacing:.02em}
+.top .sub{color:var(--muted);font-size:13px}
+nav.tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:2px solid var(--line);margin-bottom:14px}
+nav.tabs button{border:0;background:transparent;padding:9px 14px;border-radius:8px 8px 0 0;font-weight:700;color:var(--muted);position:relative;top:2px;border-bottom:3px solid transparent}
+nav.tabs button.on{color:var(--accent);border-bottom-color:var(--accent);background:var(--surface)}
+.badge{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:var(--unset);color:#fff;font-size:12px;text-align:center;margin-left:4px}
+.badge.w{background:var(--oth)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
+.panel h2{font-size:18px;margin-bottom:6px}
+.panel h3{font-size:15px}
+.bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-bottom:10px}
+.bar .grow{flex:1}
+.small{font-size:12px;color:var(--muted)}
+.help{color:var(--muted);font-size:13px;margin:4px 0 10px}
+.btn{border:1.5px solid var(--accent);background:var(--surface);color:var(--accent);padding:6px 12px;border-radius:8px;font-weight:700}
+.btn.pri{background:var(--accent);color:var(--accent-ink)}
+.btn.dng{border-color:var(--unset);color:var(--unset)}
+.btn.dng.sure{background:var(--unset);color:#fff}
+.btn.sm{padding:2px 8px;font-size:12px}
+.seg{display:inline-flex;border:1.5px solid var(--accent);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:6px 12px;font-weight:700;color:var(--accent)}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+input[type=text],select,textarea{border:1.5px solid var(--line);background:var(--surface);border-radius:6px;padding:5px 8px;min-width:0;max-width:100%}
+input[type=text].s{width:5.5em}
+input[type=text].m{width:11em}
+textarea{width:100%;min-height:54px}
+label.chk{display:inline-flex;gap:5px;align-items:center}
+.scroll{overflow-x:auto}
+table.tbl{border-collapse:collapse;width:100%;min-width:760px}
+table.tbl th,table.tbl td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:middle}
+table.tbl th{font-size:12px;color:var(--muted);background:var(--soft);position:sticky;top:0}
+table.tbl tr.grp td{background:var(--soft);font-weight:700;font-family:var(--font-d)}
+table.tbl tr.hl td{background:var(--warn-bg)}
+.pill{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;font-weight:700;border:1.5px solid currentColor;white-space:nowrap}
+.pill.exchange{color:var(--exch);background:var(--exch-bg)}
+.pill.support{color:var(--sup);background:var(--sup-bg)}
+.pill.other{color:var(--oth);background:var(--oth-bg);border-style:dashed}
+.pill.unset{color:var(--unset);background:var(--unset-bg)}
+.pill.er{color:#fff;background:var(--unset);border-color:var(--unset)}
+.pill.wn{color:var(--warn);background:var(--warn-bg)}
+/* ===== 時間割の表 ===== */
+table.tt{width:100%;border-collapse:collapse;table-layout:fixed;min-width:680px}
+table.tt th,table.tt td{border:1.5px solid var(--line);vertical-align:top;padding:3px}
+table.tt thead th{background:var(--soft);font-family:var(--font-d);padding:6px}
+table.tt th.rh{width:78px;background:var(--soft);font-size:13px;text-align:center;vertical-align:middle}
+table.tt td{height:var(--rh,86px)}
+table.tt td.clk{cursor:pointer}
+table.tt td.clk:hover{background:var(--soft)}
+table.tt td.sel{outline:3px solid var(--accent);outline-offset:-3px}
+.plus{color:var(--line);font-size:20px;display:block;text-align:center;padding-top:14px}
+.it{border:1.5px solid var(--line);border-radius:6px;padding:2px 5px;margin:2px 0;background:var(--surface);line-height:1.35}
+.it .l1{display:flex;gap:5px;align-items:center}
+.it .nm{font-size:13px}
+.it .l2{font-size:12px;margin-left:24px}
+.it .l3{margin-left:24px;display:flex;flex-wrap:wrap;gap:3px;margin-top:1px}
+.it .nt{margin-left:24px;font-size:11px;color:var(--muted)}
+.sym{display:inline-grid;place-items:center;width:19px;height:19px;border-radius:50%;border:1.5px solid currentColor;font-size:11px;font-weight:700;flex:none;line-height:1}
+.w-exchange{border:2px solid var(--exch);background:var(--exch-bg)} .w-exchange .sym{background:var(--exch);color:#fff;border-color:var(--exch)}
+.w-support{border-color:var(--sup);background:var(--sup-bg)} .w-support .sym{color:var(--sup)}
+.w-other{border:1.5px dashed var(--oth);background:var(--oth-bg)} .w-other .sym{color:var(--oth);border-style:dashed}
+.w-unset{border-color:var(--unset);background:repeating-linear-gradient(135deg,var(--unset-bg) 0 6px,transparent 6px 8px)} .w-unset .sym{color:var(--unset)}
+.tag{font-size:10.5px;border:1px solid currentColor;border-radius:4px;padding:0 4px;color:var(--muted);background:var(--surface)}
+.tag.ex{color:var(--oth);font-weight:700} .tag.df{color:var(--unset);font-weight:700}
+.mm{font-size:11px;color:var(--muted);border-top:1px dotted var(--line);margin-top:2px;padding-top:1px}
+table.tt.big .nm{font-size:17px}
+table.tt.big .l2{font-size:15px;margin-left:26px}
+table.tt.big .sym{width:23px;height:23px;font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px;font-size:12.5px;align-items:center}
+.legend span.k{display:inline-flex;gap:5px;align-items:center}
+/* ===== 編集パネル ===== */
+.editor{border:2px solid var(--accent);border-radius:10px;padding:12px;margin-top:14px;background:var(--surface)}
+.editor .eh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.ecard{border:1.5px solid var(--line);border-radius:8px;padding:10px;margin:8px 0}
+.ecard dl{margin:6px 0;display:grid;grid-template-columns:max-content 1fr;gap:2px 10px;font-size:13px}
+.ecard dt{color:var(--muted)} .ecard dd{margin:0}
+.excform{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+.notebox{background:var(--warn-bg);border-left:4px solid var(--warn);padding:6px 10px;border-radius:4px;font-size:13px;margin:6px 0}
+/* ===== 児童生徒 ===== */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
+.card{border:1.5px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.row>label{display:flex;gap:6px;align-items:center}
+.issue{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}
+.issue .msg{flex:1;min-width:0}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.ok{color:var(--sup);font-weight:700}
+/* ===== 印刷シート（白黒で区別できる設計） ===== */
+.sheetbox{overflow-x:auto;background:var(--soft);padding:12px;border-radius:8px}
+.sheet{background:#fff;color:#000;font-family:var(--font-b);margin:0 auto;padding:6mm;box-shadow:0 1px 8px rgba(0,0,0,.25)}
+.sheet.land{width:297mm;min-height:210mm}
+.sheet.port{width:210mm;min-height:297mm}
+.sheet h2{font-size:18pt;margin:0 0 2mm;color:#000}
+.sheet .meta{font-size:10pt;margin-bottom:3mm;display:flex;justify-content:space-between;gap:8mm}
+.sheet table.tt{min-width:0;border-collapse:collapse}
+.sheet table.tt th,.sheet table.tt td{border:1.5px solid #000;background:#fff;color:#000}
+.sheet table.tt thead th,.sheet table.tt th.rh{background:#e4e4e4}
+.sheet table.tt td{height:var(--rh,18mm);padding:1mm}
+.sheet table.tt td.clk:hover{background:#fff}
+.sheet .it{border:1.5px solid #000;background:#fff;color:#000;border-radius:2mm;padding:.6mm 1.2mm;margin:.8mm 0}
+.sheet .it .nm{font-size:10pt}
+.sheet .it .l2{font-size:8.5pt;margin-left:6mm}
+.sheet .it .nt{color:#000;font-size:7.5pt;margin-left:6mm}
+.sheet .sym{border:1.5px solid #000;background:#fff;color:#000;width:5mm;height:5mm;font-size:8pt}
+.sheet .w-exchange{border:3px double #000;background:#fff} .sheet .w-exchange .sym{background:#000;color:#fff;border-color:#000}
+.sheet .w-support{border:1.5px solid #000;background:#fff}
+.sheet .w-other{border:1.5px dashed #000;background:#fff} .sheet .w-other .sym{border-style:dashed}
+.sheet .w-unset{border:1.5px solid #000;background:repeating-linear-gradient(135deg,#fff 0 1.2mm,#bdbdbd 1.2mm 1.5mm)} .sheet .w-unset .sym{background:#fff}
+.sheet .tag{border:1px solid #000;color:#000;background:#fff;font-size:7pt}
+.sheet .tag.ex{font-weight:700;border-width:1.5px} .sheet .tag.df{font-weight:700;text-decoration:underline}
+.sheet .mm{color:#000;border-top:1px dotted #000;font-size:7.5pt}
+.sheet table.tt.big .nm{font-size:17pt} .sheet table.tt.big .l2{font-size:13pt;margin-left:8mm} .sheet table.tt.big .sym{width:7mm;height:7mm;font-size:11pt}
+.sheet .legend{font-size:8.5pt;color:#000;margin-top:2.5mm}
+.sheet .legend .k{gap:1.5mm}
+.sheet table.pl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:9pt}
+.sheet table.pl th,.sheet table.pl td{border:1.2px solid #000;padding:1mm 1.5mm;vertical-align:middle;word-break:break-all}
+.sheet table.pl th{background:#e4e4e4;font-size:8.5pt}
+.sheet table.pl tr.grp td{background:#cfcfcf;font-weight:700}
+.sheet table.pl .cell{display:flex;gap:1mm;align-items:center;flex-wrap:wrap}
+.sheet .iss{font-size:9pt;margin-top:3mm;border:1.5px solid #000;padding:2mm}
+.sheet .iss li{margin:.6mm 0}
+.sheet .iss .lv{display:inline-block;border:1.5px solid #000;padding:0 1.5mm;font-weight:700;margin-right:1.5mm;font-size:8pt}
+.sheet .iss .lv.er{background:#000;color:#fff}
+@media (max-width:640px){
+  .top h1{font-size:20px}
+  nav.tabs button{padding:8px 9px;font-size:13px}
+}
+@media print{
+  @page{margin:8mm}
+  html,body{background:#fff!important}
+  body{padding:0!important}
+  body *{visibility:hidden}
+  .sheet,.sheet *{visibility:visible}
+  .sheetbox{padding:0!important;background:none!important;overflow:visible!important}
+  .sheet{position:absolute;left:0;top:0;width:100%!important;min-height:0!important;box-shadow:none!important;padding:0!important}
+  .sheet table.tt td{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .sheet *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important}}
+</style>
+<style id="pgs">@page{size:A4 landscape}</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+(function(){
+'use strict';
+/* ================= 定数 ================= */
+var KEY='shienKoryuJikanwari.v1';
+var DAYS=['月','火','水','木','金','土'];
+var SYM={exchange:'交',support:'支',other:'他',unset:'？'};
+var MODES={A:'A 交流学級での参加を基本とする',B:'B 支援学級での学習を基本とする',C:'C 個別に判断する',D:'D その他'};
+var MODE_SHORT={A:'A 交流',B:'B 支援',C:'C 個別判断',D:'D その他'};
+var SRC={exception:'例外',student:'個別',school:'学校ルール',none:'未設定'};
+function uid(){return Math.random().toString(36).slice(2,9);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+/* ================= 初期データ ================= */
+var DEFAULT_ROWS=function(){return ['1校時','2校時','3校時','4校時','給食','5校時','6校時'].map(function(l,i){return {id:['r1','r2','r3','r4','rk','r5','r6'][i],label:l};});};
+var ITEM_DEFS=[
+ ['国語','教科'],['算数／数学','教科'],['社会','教科'],['理科','教科'],['生活','教科'],['音楽','教科'],['図画工作／美術','教科'],
+ ['体育／保健体育','教科'],['外国語','教科'],['技術・家庭','教科'],['その他（教科）','教科'],
+ ['道徳','活動'],['学級活動','活動'],['児童会・生徒会活動','活動'],['クラブ活動','活動'],['総合的な学習の時間','活動'],
+ ['学校行事','活動'],['給食','活動'],['休み時間','活動'],['自立活動','活動'],['その他（活動）','活動']
+];
+function makeRules(modes){
+  return ITEM_DEFS.map(function(d){return {id:uid(),name:d[0],kind:d[1],mode:(modes&&modes[d[0]])||'C',note:''};});
+}
+var SAMPLE_MODES={'国語':'B','算数／数学':'B','道徳':'A','学級活動':'A','児童会・生徒会活動':'A','学校行事':'A','給食':'A','休み時間':'A','自立活動':'B','その他（活動）':'D'};
+function newStudent(name){
+  return {id:uid(),name:name||'新しい児童生徒',kind:'support',enrollName:'支援学級',hostGrade:'',hostCls:'',useRules:true,memo:'',plan:{},slots:{},exceptions:{},memos:{}};
+}
+function sampleData(){
+  var rules=makeRules(SAMPLE_MODES);
+  var rows=DEFAULT_ROWS();
+  function R(n){for(var i=0;i<rules.length;i++){if(rules[i].name===n)return rules[i].id;}throw new Error('no rule '+n);}
+  function slotsFrom(grid){
+    var s={};
+    grid.forEach(function(day,di){day.forEach(function(cell,ri){
+      if(!cell)return;
+      s[di+'|'+rows[ri].id]=(Array.isArray(cell)?cell:[cell]).map(R);
+    });});
+    return s;
+  }
+  var M='算数／数学',PE='体育／保健体育',AR='図画工作／美術',TC='技術・家庭',EN='外国語',JI='自立活動',SO='総合的な学習の時間';
+  var s1=newStudent('生徒A（見本1）');
+  s1.hostGrade='1';s1.hostCls='3';s1.memo='見本1：社会と体育を交流学級で学習する例。確認画面の見本として、技術・家庭を未設定のままにしてあります。';
+  s1.slots=slotsFrom([
+    ['国語',M,'社会','理科','給食',PE,JI],
+    [M,'国語','音楽','社会','給食',TC,'道徳'],
+    ['国語','理科',PE,M,'給食',EN,'学級活動'],
+    ['社会','国語',M,PE,'給食',JI,AR],
+    ['国語',M,'理科','社会','給食',PE,JI]
+  ]);
+  s1.plan[R('社会')]={where:'exchange',grade:'',cls:'',other:'',note:'教科担任と相談済み'};
+  s1.plan[R(PE)]={where:'exchange',grade:'',cls:'',other:'',note:''};
+  s1.plan[R('理科')]={where:'support',grade:'',cls:'',other:'',note:''};
+  s1.plan[R('音楽')]={where:'support',grade:'',cls:'',other:'',note:''};
+  s1.plan[R(EN)]={where:'support',grade:'',cls:'',other:'',note:''};
+  s1.plan[R(AR)]={where:'support',grade:'',cls:'',other:'',note:''};
+  s1.exceptions['3|r1|'+R('社会')]={where:'support',grade:'',cls:'',other:'',note:'この日だけ支援学級で学習（見本）'};
+  var s2=newStudent('生徒B（見本2）');
+  s2.hostGrade='2';s2.hostCls='1';s2.memo='見本2：道徳・学級活動は学校ルールに任せ、総合的な学習の時間だけ個別に設定した例。給食は個別に支援学級としています。';
+  s2.slots=slotsFrom([
+    ['国語',M,'理科','社会','給食','音楽',JI],
+    [M,'国語','社会','理科','給食',AR,'道徳'],
+    ['国語',M,PE,EN,'給食','学級活動',JI],
+    ['国語',M,'理科','社会','給食',JI,PE],
+    ['国語',M,EN,AR,'給食',SO,SO]
+  ]);
+  [['理科','support'],['社会','support'],['音楽','support'],[AR,'support'],[PE,'exchange'],[EN,'support'],[SO,'exchange'],['給食','support']].forEach(function(p){
+    s2.plan[R(p[0])]={where:p[1],grade:'',cls:'',other:'',note:p[0]==='給食'?'配慮のため支援学級で食べる（見本）':''};
+  });
+  var s3=newStudent('生徒C（見本3）');
+  s3.kind='regular';s3.enrollName='通常学級';s3.hostGrade='3';s3.hostCls='2';s3.useRules=false;
+  s3.memo='見本3：通常学級に在籍し、一部の時間を支援学級で学習する例。水曜4校時は、確認画面の見本として重複を入れてあります。';
+  s3.slots=slotsFrom([
+    ['国語',M,'社会','理科','給食',PE,SO],
+    [M,'国語','音楽','社会','給食',AR,'道徳'],
+    ['国語','理科',PE,[M,JI],'給食',EN,'学級活動'],
+    ['社会','国語',M,PE,'給食','理科',TC],
+    ['国語',M,'理科','社会','給食',JI,'学級活動']
+  ]);
+  ['国語',M,'社会','理科','音楽',AR,PE,EN,TC,SO,'道徳','学級活動','給食'].forEach(function(n){
+    s3.plan[R(n)]={where:'exchange',grade:'',cls:'',other:'',note:''};
+  });
+  s3.plan[R(JI)]={where:'support',grade:'',cls:'',other:'',note:''};
+  s3.exceptions['1|r1|'+R(M)]={where:'support',grade:'',cls:'',other:'',note:'数学は少人数で（見本）'};
+  s3.exceptions['3|r3|'+R(M)]={where:'support',grade:'',cls:'',other:'',note:''};
+  return {school:{name:'見本中学校',type:'中学校',days:5,rows:rows},rules:rules,students:[s1,s2,s3]};
+}
+function blankData(){
+  return {school:{name:'',type:'中学校',days:5,rows:DEFAULT_ROWS()},rules:makeRules({}),students:[newStudent('児童生徒1')]};
+}
+
+/* ================= 状態 ================= */
+var S, UI={tab:'timetable',sid:null,mode:'teacher',edit:null,confirm:null,hl:null,scope:'one',
+  opt:{src:true,memo:true,place:true,host:true},printType:'child',orient:{child:'land',teacher:'land',items:'port'},msg:''};
+function load(){
+  try{var raw=localStorage.getItem(KEY);if(raw){var d=JSON.parse(raw);if(d&&d.school&&d.rules&&d.students){return d;}}}catch(e){}
+  return sampleData();
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function ruleById(id){for(var i=0;i<S.rules.length;i++){if(S.rules[i].id===id)return S.rules[i];}return null;}
+function cur(){
+  var st=null;for(var i=0;i<S.students.length;i++){if(S.students[i].id===UI.sid)st=S.students[i];}
+  if(!st){st=S.students[0]||null;UI.sid=st?st.id:null;}
+  return st;
+}
+function sIdx(st){return S.students.indexOf(st);}
+
+/* ================= 判定ロジック（優先順位：例外 > 個別 > 学校ルール > 未設定） ================= */
+function clsLabel(g,c,full){
+  var gs=g?(/^\d+$/.test(String(g))?g+'年':g):'';
+  var cs=c?(/^\d+$/.test(String(c))?c+'組':c):'';
+  if(!gs&&!cs)return '';
+  return (full&&S.school.type?S.school.type:'')+gs+cs;
+}
+function whereName(st,w){
+  if(w==='exchange')return st&&st.kind==='regular'?'在籍学級':'交流学級';
+  if(w==='support')return '支援学級';
+  if(w==='other')return 'その他の場所';
+  return '未設定';
+}
+function fromObj(st,o,source,mode){
+  var pl=st.plan[o._item]||{};
+  return {where:o.where,grade:o.grade||pl.grade||st.hostGrade||'',cls:o.cls||pl.cls||st.hostCls||'',
+          other:o.other||'',note:o.note||'',source:source,mode:mode};
+}
+function resolve(st,itemId,key){
+  var rule=ruleById(itemId);
+  var mode=rule?rule.mode:null;
+  if(key){
+    var ex=st.exceptions[key+'|'+itemId];
+    if(ex&&ex.where&&ex.where!=='unset'){var e2=Object.assign({_item:itemId},ex);return fromObj(st,e2,'exception',mode);}
+  }
+  var pl=st.plan[itemId];
+  if(pl&&pl.where&&pl.where!=='unset'){var p2=Object.assign({_item:itemId},pl);return fromObj(st,p2,'student',mode);}
+  if(st.useRules&&rule){
+    if(rule.mode==='A')return fromObj(st,{_item:itemId,where:'exchange'},'school',mode);
+    if(rule.mode==='B')return fromObj(st,{_item:itemId,where:'support'},'school',mode);
+  }
+  return {where:'unset',grade:'',cls:'',other:'',note:'',source:'none',mode:mode};
+}
+function ruleWhere(rule){return rule&&rule.mode==='A'?'exchange':(rule&&rule.mode==='B'?'support':null);}
+function planDiff(st,itemId){
+  var rule=ruleById(itemId),pl=st.plan[itemId];
+  if(!rule||!st.useRules||!pl||!pl.where||pl.where==='unset')return false;
+  var rw=ruleWhere(rule);
+  return !!rw&&pl.where!==rw;
+}
+function sameResult(a,b){
+  return a.where===b.where&&(a.where!=='exchange'||(a.grade===b.grade&&a.cls===b.cls))&&(a.where!=='other'||a.other===b.other);
+}
+function placeText(st,r,full,withName){
+  if(r.where==='exchange'){var c=clsLabel(r.grade,r.cls,full);return c?(withName===false?c:whereName(st,'exchange')+'・'+c):whereName(st,'exchange');}
+  if(r.where==='other')return r.other||'その他の場所';
+  return whereName(st,r.where);
+}
+function rowLabel(r){return r.label;}
+function dayName(i){return DAYS[i]+'曜';}
+function slotKeys(){
+  var ks=[];for(var d=0;d<S.school.days;d++){S.school.rows.forEach(function(r){ks.push(d+'|'+r.id);});}
+  return ks;
+}
+function usedItems(st){
+  var u={};Object.keys(st.slots).forEach(function(k){var d=+k.split('|')[0];if(d>=S.school.days)return;(st.slots[k]||[]).forEach(function(id){u[id]=(u[id]||0)+1;});});
+  return u;
+}
+function issues(st){
+  var out=[];
+  function add(level,code,msg,fix){out.push({level:level,code:code,msg:msg,fix:fix,sid:st.id,sname:st.name});}
+  var used=usedItems(st);
+  slotKeys().forEach(function(key){
+    var items=st.slots[key]||[];if(!items.length)return;
+    var parts=key.split('|');var row=S.school.rows.filter(function(r){return r.id===parts[1];})[0];
+    var when=dayName(+parts[0])+' '+(row?rowLabel(row):'');
+    var rs=items.map(function(id){return resolve(st,id,key);});
+    if(items.length>1){
+      var diff=false;for(var i=1;i<rs.length;i++){if(!sameResult(rs[0],rs[i]))diff=true;}
+      var names=items.map(function(id){var r=ruleById(id);return r?r.name:'（削除済み）';}).join('・');
+      add(diff?'error':'warn','dup',when+'：同じ時間帯に複数の活動が登録されています（'+names+'）'+(diff?'。学習場所も食い違っています。':'。'),{tab:'timetable',key:key});
+    }
+    items.forEach(function(id,i){
+      var r=rs[i],rule=ruleById(id),nm=rule?rule.name:'（削除済み）';
+      if(r.where==='unset'){
+        var why=rule&&rule.mode==='C'?'（学校共通ルールは「個別に判断する」です）':(rule&&rule.mode==='D'?'（学校共通ルールは「その他」です）':'');
+        add('error','noplace',when+' '+nm+'：学習場所が未設定です'+why,{tab:'timetable',key:key});
+      }else if(r.where==='exchange'&&(!r.grade||!r.cls)){
+        add('error','nohost',when+' '+nm+'：交流先の学年・組が未設定です',{tab:'timetable',key:key});
+      }else if(r.where==='other'&&!r.other){
+        add('warn','noother',when+' '+nm+'：「その他の場所」の名前が未入力です',{tab:'timetable',key:key});
+      }
+      var ex=st.exceptions[key+'|'+id];
+      if(ex&&ex.where&&ex.where!=='unset'){
+        var base=resolve(st,id,null);
+        if(!sameResult(base,r)){
+          add('warn','exc',when+' '+nm+'：この時間だけ通常の設定（'+placeText(st,base,true)+'）と異なります → '+placeText(st,r,true),{tab:'timetable',key:key});
+        }
+      }
+    });
+  });
+  S.rules.forEach(function(rule){
+    if(planDiff(st,rule.id)){
+      var pl=st.plan[rule.id];
+      add('warn','diff',rule.name+'：学校共通ルール（'+MODE_SHORT[rule.mode]+'）と個別設定（'+whereName(st,pl.where)+'）が異なります',{tab:'plan',item:rule.id});
+    }
+    var p=st.plan[rule.id];
+    if(p&&p.where==='exchange'&&!used[rule.id]&&!(p.grade||st.hostGrade)||p&&p.where==='exchange'&&!used[rule.id]&&!(p.cls||st.hostCls)){
+      add('error','nohost',rule.name+'：交流先の学年・組が未設定です',{tab:'plan',item:rule.id});
+    }
+  });
+  if(st.kind==='support'&&(!st.hostGrade||!st.hostCls)){
+    add('warn','nohostdef','交流学級の基本（学年・組）が未入力です',{tab:'students'});
+  }
+  out.sort(function(a,b){return (a.level==='error'?0:1)-(b.level==='error'?0:1);});
+  return out;
+}
+function countIssues(list){var e=0,w=0;list.forEach(function(i){if(i.level==='error')e++;else w++;});return {e:e,w:w};}
+
+/* ================= 描画ヘルパ ================= */
+function pillW(st,w){return '<span class="pill '+w+'">'+SYM[w]+' '+esc(whereName(st,w))+'</span>';}
+function itemHTML(st,key,id,o){
+  var rule=ruleById(id),nm=rule?rule.name:'（削除された項目）';
+  var r=resolve(st,id,key);
+  var h='<div class="it w-'+r.where+(r.source==='exception'?' exc':'')+'"><div class="l1"><span class="sym">'+SYM[r.where]+'</span><b class="nm">'+esc(nm)+'</b></div>';
+  if(o.place!==false){
+    var t=whereName(st,r.where);
+    if(r.where==='exchange'){var c=(o.host!==false)?clsLabel(r.grade,r.cls,false):'';if(c)t=o.child?c:t+' '+c;}
+    if(r.where==='other'&&r.other)t=r.other;
+    h+='<div class="l2">'+esc(t)+'</div>';
+  }
+  if(o.src){
+    var tags='<span class="tag">'+SRC[r.source]+(r.source==='school'&&r.mode?' '+r.mode:'')+'</span>';
+    if(planDiff(st,id))tags+='<span class="tag df">ルールと違う</span>';
+    if(r.source==='exception')tags+='<span class="tag ex">この時間だけ</span>';
+    h+='<div class="l3">'+tags+'</div>';
+  }
+  if(o.memo&&r.note)h+='<div class="nt">'+esc(r.note)+'</div>';
+  return h+'</div>';
+}
+function gridHTML(st,o){
+  var rows=S.school.rows,nd=S.school.days;
+  var h='<table class="tt'+(o.big?' big':'')+'"'+(o.rh?' style="--rh:'+o.rh+'"':'')+'><thead><tr><th class="rh"></th>';
+  for(var d=0;d<nd;d++)h+='<th>'+DAYS[d]+'</th>';
+  h+='</tr></thead><tbody>';
+  rows.forEach(function(r){
+    h+='<tr><th class="rh">'+esc(rowLabel(r))+'</th>';
+    for(var d=0;d<nd;d++){
+      var key=d+'|'+r.id,items=st.slots[key]||[];
+      h+='<td'+(o.click?' class="clk'+(UI.edit===key?' sel':'')+'" data-a="cell" data-key="'+key+'" tabindex="0" role="button" aria-label="'+DAYS[d]+'曜 '+esc(rowLabel(r))+'を編集"':'')+'>';
+      h+=items.map(function(id){return itemHTML(st,key,id,o);}).join('');
+      if(!items.length&&o.click)h+='<span class="plus">＋</span>';
+      if(o.memo&&st.memos[key])h+='<div class="mm">'+esc(st.memos[key])+'</div>';
+      h+='</td>';
+    }
+    h+='</tr>';
+  });
+  return h+'</tbody></table>';
+}
+function legendHTML(st,withSrc){
+  var h='<div class="legend"><span class="k"><span class="it w-exchange" style="margin:0;padding:0 4px"><span class="sym">交</span></span> '+esc(whereName(st,'exchange'))+'（二重の太枠）</span>'
+   +'<span class="k"><span class="it w-support" style="margin:0;padding:0 4px"><span class="sym">支</span></span> 支援学級（実線）</span>'
+   +'<span class="k"><span class="it w-other" style="margin:0;padding:0 4px"><span class="sym">他</span></span> その他の場所（点線）</span>'
+   +'<span class="k"><span class="it w-unset" style="margin:0;padding:0 4px"><span class="sym">？</span></span> 未設定（斜線）</span>';
+  if(withSrc)h+='<span class="k"><span class="tag">個別／学校ルール X</span> 設定のもと</span><span class="k"><span class="tag ex">この時間だけ</span> 例外</span><span class="k"><span class="tag df">ルールと違う</span> 学校共通ルールと異なる個別設定</span>';
+  return h+'</div>';
+}
+function studentBar(withScope){
+  var st=cur();
+  var h='<div class="panel"><div class="bar"><label><b>児童生徒</b> <select data-c="sid" id="sid">'+S.students.map(function(s){return '<option value="'+s.id+'"'+(st&&s.id===st.id?' selected':'')+'>'+esc(s.name)+'</option>';}).join('')+'</select></label>';
+  if(st){
+    var c=countIssues(issues(st));
+    h+='<span class="small">'+(st.kind==='regular'?'通常学級に在籍':'支援学級に在籍')+'・'+(st.kind==='regular'?'在籍':'交流')+'学級 '+esc(clsLabel(st.hostGrade,st.hostCls,true)||'未設定')+'</span>';
+    h+='<span class="grow"></span>';
+    h+=(c.e?'<span class="pill er">エラー '+c.e+'</span>':'<span class="pill support">エラーなし</span>')+(c.w?' <span class="pill wn">注意 '+c.w+'</span>':'');
+  }
+  return h+'</div></div>';
+}
+
+/* ================= 画面：時間割 ================= */
+function vTimetable(){
+  var st=cur();if(!st)return '<div class="panel empty">児童生徒がいません。「児童生徒」タブから追加してください。</div>';
+  var child=UI.mode==='child';
+  var o=child?{click:true,child:true,big:true,place:UI.opt.place,host:UI.opt.host}:{click:true,src:UI.opt.src,memo:UI.opt.memo};
+  var h=studentBar();
+  h+='<section class="panel"><div class="bar"><div class="seg">'
+   +'<button data-a="mode" data-v="teacher" class="'+(!child?'on':'')+'">先生用（詳しく）</button><button data-a="mode" data-v="child" class="'+(child?'on':'')+'">子ども用（見た目の確認）</button></div>';
+  if(child){
+    h+='<label class="chk"><input type="checkbox" data-c="opt" data-k="place"'+(UI.opt.place?' checked':'')+'> 学習場所を出す</label><label class="chk"><input type="checkbox" data-c="opt" data-k="host"'+(UI.opt.host?' checked':'')+'> 交流先の学年・組を出す</label>';
+  }else{
+    h+='<label class="chk"><input type="checkbox" data-c="opt" data-k="src"'+(UI.opt.src?' checked':'')+'> 設定のもと（個別／学校ルール／例外）</label><label class="chk"><input type="checkbox" data-c="opt" data-k="memo"'+(UI.opt.memo?' checked':'')+'> メモ</label>';
+  }
+  h+='</div><p class="help">コマをクリックすると、教科・活動の入れ替えと、その時間だけの例外設定ができます。</p>';
+  h+='<div class="scroll">'+gridHTML(st,o)+'</div>'+legendHTML(st,!child)+edHTML(st)+'</section>';
+  return h;
+}
+function edHTML(st){
+  var key=UI.edit;if(!key)return '';
+  var p=key.split('|'),row=S.school.rows.filter(function(r){return r.id===p[1];})[0];
+  if(!row||+p[0]>=S.school.days){UI.edit=null;return '';}
+  var i=sIdx(st),items=st.slots[key]||[];
+  var h='<div class="editor" id="editor"><div class="eh"><h3>'+dayName(+p[0])+' '+esc(rowLabel(row))+'（'+esc(st.name)+'）</h3><button class="btn sm" data-a="closeEd">閉じる</button></div>';
+  if(items.length>1)h+='<div class="notebox">この時間に'+items.length+'件の活動が入っています。意図したものでなければ、不要な方を外してください。</div>';
+  if(!items.length)h+='<p class="help">教科・活動がまだ入っていません。下から追加してください。</p>';
+  items.forEach(function(id){
+    var rule=ruleById(id),nm=rule?rule.name:'（削除された項目）';
+    var base=resolve(st,id,null),r=resolve(st,id,key);
+    var exKey=key+'|'+id,ex=st.exceptions[exKey];
+    var hasEx=ex&&ex.where&&ex.where!=='unset';
+    var path='students.'+i+'.exceptions.'+exKey;
+    h+='<div class="ecard w-'+r.where+'" style="background:var(--surface)"><div class="row"><b style="font-family:var(--font-d)">'+esc(nm)+'</b><span class="small">'+(rule?rule.kind:'')+'</span><span class="grow" style="flex:1"></span><button class="btn sm dng" data-a="slotDel" data-key="'+key+'" data-item="'+id+'">この時間から外す</button></div>';
+    h+='<dl><dt>通常の設定</dt><dd>'+pillW(st,base.where)+' '+esc(base.where==='exchange'?clsLabel(base.grade,base.cls,true):(base.where==='other'?base.other:''))+' <span class="small">（'+SRC[base.source]+'）</span></dd>';
+    h+='<dt>学校共通ルール</dt><dd>'+(rule?esc(MODES[rule.mode]):'—')+(st.useRules?'':' <span class="small">（この児童生徒には適用しない設定）</span>')+'</dd>';
+    h+='<dt>この時間の結果</dt><dd>'+pillW(st,r.where)+' '+esc(r.where==='exchange'?clsLabel(r.grade,r.cls,true):(r.where==='other'?r.other:''))+(hasEx?' <span class="tag ex">例外</span>':'')+'</dd></dl>';
+    h+='<div class="excform"><label>この時間だけ例外にする <select data-c="excWhere" data-key="'+key+'" data-item="'+id+'">'
+      +'<option value="">例外なし（通常の設定に従う）</option>'
+      +['exchange','support','other'].map(function(w){return '<option value="'+w+'"'+(hasEx&&ex.where===w?' selected':'')+'>'+esc(whereName(st,w))+'で学習する</option>';}).join('')+'</select></label>';
+    if(hasEx&&ex.where==='exchange'){
+      h+='<label>学年 <input type="text" class="s" data-b="'+path+'.grade" value="'+esc(ex.grade||'')+'" placeholder="'+esc(r.grade||'例 1')+'"></label><label>組 <input type="text" class="s" data-b="'+path+'.cls" value="'+esc(ex.cls||'')+'" placeholder="'+esc(r.cls||'例 3')+'"></label>';
+    }
+    if(hasEx&&ex.where==='other'){
+      h+='<label>場所 <input type="text" class="m" data-b="'+path+'.other" value="'+esc(ex.other||'')+'" placeholder="例 図書室"></label>';
+    }
+    if(hasEx){h+='<label style="flex:1;min-width:200px">理由・メモ <input type="text" style="width:100%" data-b="'+path+'.note" value="'+esc(ex.note||'')+'"></label>';}
+    h+='</div></div>';
+  });
+  var avail=S.rules.filter(function(r){return items.indexOf(r.id)<0;});
+  h+='<div class="row" style="margin-top:8px"><label>教科・活動を追加 <select data-c="slotAdd" data-key="'+key+'"><option value="">選んでください</option>'
+    +['教科','活動'].map(function(k){return '<optgroup label="'+(k==='教科'?'教科':'教科以外の活動')+'">'+avail.filter(function(r){return r.kind===k;}).map(function(r){return '<option value="'+r.id+'">'+esc(r.name)+'</option>';}).join('')+'</optgroup>';}).join('')
+    +'</select></label>';
+  if(items.length)h+='<button class="btn sm dng" data-a="slotClear" data-key="'+key+'">この時間を空にする</button>';
+  h+='</div><div style="margin-top:8px"><label class="small" for="slotmemo">この時間の先生向けメモ（子ども用の表には出ません）</label><textarea id="slotmemo" data-b="students.'+i+'.memos.'+key+'">'+esc(st.memos[key]||'')+'</textarea></div></div>';
+  return h;
+}
+
+/* ================= 画面：参加計画 ================= */
+function vPlan(){
+  var st=cur();if(!st)return '<div class="panel empty">児童生徒がいません。</div>';
+  var i=sIdx(st),used=usedItems(st);
+  var exCount={};Object.keys(st.exceptions).forEach(function(k){var id=k.split('|')[2];var e=st.exceptions[k];if(e&&e.where&&e.where!=='unset')exCount[id]=(exCount[id]||0)+1;});
+  var h=studentBar();
+  h+='<section class="panel"><h2>個別の参加計画</h2><p class="help">教科・活動ごとに、'+esc(st.name)+'さんの参加先を設定します。「未設定」にした項目は、学校共通ルールが使われます（ルールが「個別に判断」の項目は未設定のままです）。曜日や時間帯で変える場合は、「時間割」でそのコマに例外を設定してください。</p>';
+  h+='<div class="bar"><span class="small">'+(st.kind==='regular'?'在籍学級':'交流学級の基本')+'：<b>'+esc(clsLabel(st.hostGrade,st.hostCls,true)||'未設定')+'</b></span><button class="btn sm" data-a="tab" data-v="students">変更する</button><span class="grow"></span>'
+    +'<label>未設定の項目をまとめて <select id="bulkw"><option value="exchange">'+whereName(st,'exchange')+'</option><option value="support">支援学級</option></select> にする</label><button class="btn sm" data-a="bulk">実行</button></div>';
+  h+='<div class="scroll"><table class="tbl"><thead><tr><th>教科・活動</th><th>学校共通ルール</th><th>参加先（個別設定）</th><th>学年</th><th>組</th><th>その他の場所／メモ</th><th>結果</th></tr></thead><tbody>';
+  ['教科','活動'].forEach(function(k){
+    h+='<tr class="grp"><td colspan="7">'+(k==='教科'?'教科':'教科以外の活動')+'</td></tr>';
+    S.rules.filter(function(r){return r.kind===k;}).forEach(function(rule){
+      var pl=st.plan[rule.id]||{where:'unset'};
+      var path='students.'+i+'.plan.'+rule.id;
+      var r=resolve(st,rule.id,null);
+      h+='<tr id="pl-'+rule.id+'"'+(UI.hl===rule.id?' class="hl"':'')+'><td><b>'+esc(rule.name)+'</b>'+(used[rule.id]?' <span class="small">週'+used[rule.id]+'コマ</span>':'')+(exCount[rule.id]?' <span class="tag ex">例外'+exCount[rule.id]+'</span>':'')+'</td>';
+      h+='<td><span class="small">'+esc(MODE_SHORT[rule.mode])+'</span></td>';
+      h+='<td><select data-b="'+path+'.where" data-r="1" aria-label="'+esc(rule.name)+'の参加先">'
+        +[['unset','未設定'],['exchange',whereName(st,'exchange')+'で学習する'],['support','支援学級で学習する'],['other','その他の場所で学習する']].map(function(o){return '<option value="'+o[0]+'"'+(pl.where===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select></td>';
+      if(pl.where==='exchange'){
+        h+='<td><input type="text" class="s" data-b="'+path+'.grade" value="'+esc(pl.grade||'')+'" placeholder="'+esc(st.hostGrade||'学年')+'" aria-label="学年"></td><td><input type="text" class="s" data-b="'+path+'.cls" value="'+esc(pl.cls||'')+'" placeholder="'+esc(st.hostCls||'組')+'" aria-label="組"></td>';
+      }else h+='<td></td><td></td>';
+      h+='<td>'+(pl.where==='other'?'<input type="text" class="m" data-b="'+path+'.other" value="'+esc(pl.other||'')+'" placeholder="場所の名前" aria-label="場所"> ':'')+'<input type="text" class="m" data-b="'+path+'.note" value="'+esc(pl.note||'')+'" placeholder="メモ" aria-label="メモ"></td>';
+      h+='<td>'+pillW(st,r.where)+' '+(r.where==='exchange'?'<b>'+esc(clsLabel(r.grade,r.cls,false)||'学年・組未設定')+'</b>':'')+' <span class="small">'+SRC[r.source]+'</span>'+(planDiff(st,rule.id)?' <span class="pill wn">ルールと違う</span>':'')+'</td></tr>';
+    });
+  });
+  h+='</tbody></table></div></section>';
+  return h;
+}
+
+/* ================= 画面：学校ルール ================= */
+function vRules(){
+  var h='<section class="panel"><h2>学校の基本設定</h2><div class="row">'
+   +'<label>学校名 <input type="text" class="m" data-b="school.name" value="'+esc(S.school.name)+'"></label>'
+   +'<label>校種 <select data-b="school.type" data-r="1">'+['小学校','中学校','その他'].map(function(t){return '<option'+(S.school.type===t?' selected':'')+'>'+t+'</option>';}).join('')+'</select></label>'
+   +'<label>曜日 <select data-b="school.days" data-r="1" data-n="1"><option value="5"'+(S.school.days===5?' selected':'')+'>月〜金</option><option value="6"'+(S.school.days===6?' selected':'')+'>月〜土</option></select></label></div>';
+  h+='<h3 style="margin-top:12px">時間割の行</h3><p class="help">校時や給食などの行を追加・削除・並べ替えできます。</p><div class="row">';
+  S.school.rows.forEach(function(r,ri){
+    h+='<span class="row" style="gap:3px"><input type="text" class="s" data-b="school.rows.'+ri+'.label" value="'+esc(r.label)+'" aria-label="行の名前">'
+     +'<button class="btn sm" data-a="rowMove" data-i="'+ri+'" data-d="-1" aria-label="前へ">◀</button><button class="btn sm" data-a="rowMove" data-i="'+ri+'" data-d="1" aria-label="後ろへ">▶</button>'
+     +'<button class="btn sm dng'+(UI.confirm==='row'+ri?' sure':'')+'" data-a="rowDel" data-i="'+ri+'">'+(UI.confirm==='row'+ri?'本当に消す':'消す')+'</button></span>';
+  });
+  h+='<button class="btn sm" data-a="rowAdd">＋ 行を追加</button></div></section>';
+  h+='<section class="panel"><h2>学校共通ルール</h2><p class="help">ここでの設定は、時間割を作るときの<b>初期設定</b>です。これだけで児童生徒の参加先が決まることはありません。児童生徒ごとの個別設定と、その時間だけの例外が優先されます。項目は追加・削除・名前の変更ができます。</p>';
+  h+='<div class="scroll"><table class="tbl"><thead><tr><th>項目</th><th>種別</th><th>初期設定</th><th>補足メモ</th><th></th></tr></thead><tbody>';
+  S.rules.forEach(function(r,ri){
+    h+='<tr><td><input type="text" class="m" data-b="rules.'+ri+'.name" value="'+esc(r.name)+'" aria-label="項目名"></td>'
+     +'<td><select data-b="rules.'+ri+'.kind" data-r="1"><option value="教科"'+(r.kind==='教科'?' selected':'')+'>教科</option><option value="活動"'+(r.kind==='活動'?' selected':'')+'>教科以外の活動</option></select></td>'
+     +'<td><select data-b="rules.'+ri+'.mode" data-r="1">'+Object.keys(MODES).map(function(m){return '<option value="'+m+'"'+(r.mode===m?' selected':'')+'>'+MODES[m]+'</option>';}).join('')+'</select></td>'
+     +'<td><input type="text" style="width:100%;min-width:140px" data-b="rules.'+ri+'.note" value="'+esc(r.note||'')+'" aria-label="補足"></td>'
+     +'<td style="white-space:nowrap"><button class="btn sm" data-a="ruleMove" data-i="'+ri+'" data-d="-1" aria-label="上へ">▲</button> <button class="btn sm" data-a="ruleMove" data-i="'+ri+'" data-d="1" aria-label="下へ">▼</button> '
+     +'<button class="btn sm dng'+(UI.confirm==='rule'+ri?' sure':'')+'" data-a="ruleDel" data-i="'+ri+'">'+(UI.confirm==='rule'+ri?'本当に消す':'消す')+'</button></td></tr>';
+  });
+  h+='</tbody></table></div><div class="row" style="margin-top:10px"><button class="btn" data-a="ruleAdd" data-k="教科">＋ 教科を追加</button><button class="btn" data-a="ruleAdd" data-k="活動">＋ 活動を追加</button><span class="small">項目を消すと、時間割に入っていたその項目も外れます。</span></div></section>';
+  return h;
+}
+
+/* ================= 画面：児童生徒 ================= */
+function vStudents(){
+  var h='<section class="panel"><h2>児童生徒</h2><p class="help">名前はイニシャルや仮名でも使えます。データはこの端末のブラウザの中だけに保存されます。</p><div class="cards">';
+  S.students.forEach(function(st,i){
+    var p='students.'+i;
+    h+='<div class="card"><label>名前 <input type="text" style="width:100%" data-b="'+p+'.name" value="'+esc(st.name)+'"></label>'
+     +'<div class="row"><label>在籍 <select data-b="'+p+'.kind" data-r="1"><option value="support"'+(st.kind==='support'?' selected':'')+'>支援学級に在籍</option><option value="regular"'+(st.kind==='regular'?' selected':'')+'>通常学級に在籍</option></select></label></div>'
+     +(st.kind==='support'?'<label>在籍学級の名前 <input type="text" class="m" data-b="'+p+'.enrollName" value="'+esc(st.enrollName||'')+'"></label>':'')
+     +'<div class="row"><b>'+(st.kind==='regular'?'在籍学級':'交流学級の基本')+'</b><label>学年 <input type="text" class="s" data-b="'+p+'.hostGrade" value="'+esc(st.hostGrade)+'"></label><label>組 <input type="text" class="s" data-b="'+p+'.hostCls" value="'+esc(st.hostCls)+'"></label></div>'
+     +'<label class="chk"><input type="checkbox" data-b="'+p+'.useRules" data-r="1"'+(st.useRules?' checked':'')+'> 学校共通ルールを初期設定として使う</label>'
+     +'<label>メモ <textarea data-b="'+p+'.memo">'+esc(st.memo||'')+'</textarea></label>'
+     +'<div class="row"><button class="btn sm" data-a="pick" data-id="'+st.id+'" data-v="timetable">時間割へ</button><button class="btn sm" data-a="pick" data-id="'+st.id+'" data-v="plan">参加計画へ</button><span class="grow" style="flex:1"></span>'
+     +'<button class="btn sm dng'+(UI.confirm==='st'+i?' sure':'')+'" data-a="stDel" data-i="'+i+'">'+(UI.confirm==='st'+i?'本当に消す':'消す')+'</button></div></div>';
+  });
+  h+='</div><div class="row" style="margin-top:12px"><button class="btn pri" data-a="stAdd">＋ 児童生徒を追加</button><button class="btn" data-a="stCopy">いまの時間割を写して追加</button></div></section>';
+  return h;
+}
+
+/* ================= 画面：確認 ================= */
+function vCheck(){
+  var list=UI.scope==='all'?S.students:[cur()].filter(Boolean);
+  var h=studentBar();
+  h+='<section class="panel"><div class="bar"><h2 style="margin:0">未設定・矛盾の確認</h2><span class="grow"></span><div class="seg"><button data-a="scope" data-v="one" class="'+(UI.scope==='one'?'on':'')+'">選んだ人だけ</button><button data-a="scope" data-v="all" class="'+(UI.scope==='all'?'on':'')+'">全員</button></div></div>'
+   +'<p class="help"><span class="pill er">エラー</span> は学習場所が決まっていない状態で、修正が必要です。<span class="pill wn">注意</span> は設定として成り立っていますが、ふだんと違う点の確認です。</p>';
+  var any=false;
+  list.forEach(function(st){
+    var is=issues(st),c=countIssues(is);
+    h+='<h3 style="margin:12px 0 2px">'+esc(st.name)+' <span class="small">エラー '+c.e+'・注意 '+c.w+'</span></h3>';
+    if(!is.length){h+='<p class="ok">問題は見つかりませんでした。</p>';return;}
+    any=true;
+    is.forEach(function(it,n){
+      h+='<div class="issue"><span class="pill '+(it.level==='error'?'er':'wn')+'">'+(it.level==='error'?'エラー':'注意')+'</span><div class="msg">'+esc(it.msg)+'</div><button class="btn sm" data-a="fix" data-sid="'+st.id+'" data-tab="'+it.fix.tab+'"'+(it.fix.key?' data-key="'+it.fix.key+'"':'')+(it.fix.item?' data-item="'+it.fix.item+'"':'')+'>直す</button></div>';
+    });
+  });
+  return h+'</section>';
+}
+
+/* ================= 画面：印刷・データ ================= */
+function sheetChild(st){
+  var n=S.school.rows.length;
+  var h='<div class="sheet land"><h2>'+esc(st.name)+'の じかんわり</h2><div class="meta"><span>'+esc(S.school.name)+'</span><span>'+(st.kind==='regular'?'':'')+'</span></div>';
+  h+=gridHTML(st,{child:true,big:true,place:UI.opt.place,host:UI.opt.host,rh:(140/n).toFixed(1)+'mm'});
+  h+=legendHTML(st,false)+'</div>';
+  return h;
+}
+function sheetTeacher(st){
+  var n=S.school.rows.length,is=issues(st);
+  var h='<div class="sheet land"><h2>時間割（先生用）　'+esc(st.name)+'</h2><div class="meta"><span>'+esc(S.school.name)+'　'+(st.kind==='regular'?'通常学級に在籍':'支援学級に在籍')+'・'+(st.kind==='regular'?'在籍':'交流')+'学級：'+esc(clsLabel(st.hostGrade,st.hostCls,true)||'未設定')+'</span><span>学校共通ルール：'+(st.useRules?'使う':'使わない')+'</span></div>';
+  h+=gridHTML(st,{src:true,memo:true,rh:(124/n).toFixed(1)+'mm'});
+  h+=legendHTML(st,true);
+  if(is.length){
+    h+='<div class="iss"><b>確認事項</b><ul style="margin:1mm 0 0;padding-left:4mm;list-style:none">'+is.map(function(i){return '<li><span class="lv '+(i.level==='error'?'er':'')+'">'+(i.level==='error'?'エラー':'注意')+'</span>'+esc(i.msg)+'</li>';}).join('')+'</ul></div>';
+  }
+  return h+'</div>';
+}
+function sheetItems(){
+  var sts=S.students;
+  var h='<div class="sheet port"><h2>教科・活動別の参加計画一覧</h2><div class="meta"><span>'+esc(S.school.name)+'</span><span>初期設定：学校共通ルール／個別：個別設定／例外n：時間割での例外の数</span></div>';
+  var w1=34,w2=22,wr=(100-w1-w2)/Math.max(1,sts.length);
+  h+='<table class="pl"><colgroup><col style="width:'+w1+'%"><col style="width:'+w2+'%">'+sts.map(function(){return '<col style="width:'+wr+'%">';}).join('')+'</colgroup>';
+  h+='<thead><tr><th>教科・活動</th><th>学校共通ルール</th>'+sts.map(function(s){return '<th>'+esc(s.name)+'</th>';}).join('')+'</tr></thead><tbody>';
+  ['教科','活動'].forEach(function(k){
+    h+='<tr class="grp"><td colspan="'+(2+sts.length)+'">'+(k==='教科'?'教科':'教科以外の活動')+'</td></tr>';
+    S.rules.filter(function(r){return r.kind===k;}).forEach(function(rule){
+      h+='<tr><td><b>'+esc(rule.name)+'</b></td><td>'+esc(MODE_SHORT[rule.mode])+'</td>';
+      sts.forEach(function(st){
+        var r=resolve(st,rule.id,null),ec=0;
+        Object.keys(st.exceptions).forEach(function(key){var p=key.split('|');if(p[2]===rule.id&&st.exceptions[key].where&&st.exceptions[key].where!=='unset')ec++;});
+        var t=r.where==='exchange'?(clsLabel(r.grade,r.cls,false)||'学年組？'):(r.where==='support'?'支援学級':(r.where==='other'?(r.other||'その他'):'未設定'));
+        h+='<td><div class="cell"><span class="it w-'+r.where+'" style="margin:0;padding:0 1mm"><span class="sym">'+SYM[r.where]+'</span> '+esc(t)+'</span><span class="small" style="color:#000;font-size:7pt">'+(r.source==='student'?'個別':(r.source==='school'?'ルール':(r.source==='none'?'':'')))+(ec?' 例外'+ec:'')+'</span></div></td>';
+      });
+      h+='</tr>';
+    });
+  });
+  h+='</tbody></table>';
+  h+='<div class="legend"><span class="k"><span class="it w-exchange" style="margin:0;padding:0 4px"><span class="sym">交</span></span> 交流（在籍）学級</span><span class="k"><span class="it w-support" style="margin:0;padding:0 4px"><span class="sym">支</span></span> 支援学級</span><span class="k"><span class="it w-other" style="margin:0;padding:0 4px"><span class="sym">他</span></span> その他の場所</span><span class="k"><span class="it w-unset" style="margin:0;padding:0 4px"><span class="sym">？</span></span> 未設定</span></div>';
+  return h+'</div>';
+}
+function vPrint(){
+  var st=cur(),t=UI.printType,sheet='';
+  if(t==='items')sheet=sheetItems();else if(st)sheet=(t==='child'?sheetChild(st):sheetTeacher(st));
+  var h='';
+  if(t!=='items')h+=studentBar();
+  h+='<section class="panel"><h2>印刷</h2><div class="bar"><div class="seg">'
+   +[['child','A 子どもが見る時間割'],['teacher','B 先生用の詳しい時間割'],['items','C 教科・活動別の参加計画一覧']].map(function(x){return '<button data-a="ptype" data-v="'+x[0]+'" class="'+(t===x[0]?'on':'')+'">'+x[1]+'</button>';}).join('')
+   +'</div><label>向き <select data-c="orient"><option value="land"'+(UI.orient[t]==='land'?' selected':'')+'>A4 よこ</option><option value="port"'+(UI.orient[t]==='port'?' selected':'')+'>A4 たて</option></select></label>';
+  if(t==='child')h+='<label class="chk"><input type="checkbox" data-c="opt" data-k="place"'+(UI.opt.place?' checked':'')+'> 学習場所を出す</label><label class="chk"><input type="checkbox" data-c="opt" data-k="host"'+(UI.opt.host?' checked':'')+'> 交流先の学年・組を出す</label>';
+  h+='<span class="grow"></span><button class="btn pri" data-a="print">印刷する</button></div>'
+   +'<p class="help">白黒印刷でも区別できるよう、交流は二重の太枠、支援は実線、その他は点線、未設定は斜線で表します。印刷ダイアログでは「用紙サイズ A4」「余白 標準または最小」「倍率 100%」にしてください。</p>'
+   +'<div class="sheetbox">'+sheet+'</div></section>';
+  h+='<section class="panel"><h2>データ</h2><div class="row"><button class="btn" data-a="export">ファイルに書き出す</button><label class="btn" style="cursor:pointer">ファイルを読みこむ<input type="file" id="imp" accept=".json,application/json" style="display:none"></label>'
+   +'<button class="btn dng'+(UI.confirm==='sample'?' sure':'')+'" data-a="sample">'+(UI.confirm==='sample'?'本当に入れ替える':'見本データ（3ケース）に戻す')+'</button>'
+   +'<button class="btn dng'+(UI.confirm==='blank'?' sure':'')+'" data-a="blank">'+(UI.confirm==='blank'?'本当に消す':'見本を消してはじめる')+'</button></div>'
+   +'<p class="help">見本データはすべて架空で、特定の参加方法を勧めるものではありません。書き出したファイルは、ほかの端末で読みこめます。'+(UI.msg?' <b>'+esc(UI.msg)+'</b>':'')+'</p></section>';
+  return h;
+}
+
+/* ================= 全体描画 ================= */
+function render(){
+  UI.dirty=false;
+  var y=window.scrollY;
+  var errs=0,warns=0;S.students.forEach(function(s){var c=countIssues(issues(s));errs+=c.e;warns+=c.w;});
+  var tabs=[['timetable','時間割'],['plan','参加計画'],['rules','学校ルール'],['students','児童生徒'],['check','確認'],['print','印刷・データ']];
+  var h='<header class="top"><div><h1>支援級の時間割メーカー</h1><div class="sub">交流学級への参加計画つき。学校共通ルール・個別設定・例外を分けて管理します</div></div><div class="small">'+esc(S.school.name)+'</div></header>';
+  h+='<nav class="tabs" role="tablist">'+tabs.map(function(t){
+    var b='';if(t[0]==='check'){b=errs?'<span class="badge">'+errs+'</span>':'';if(warns)b+='<span class="badge w">'+warns+'</span>';}
+    return '<button role="tab" data-a="tab" data-v="'+t[0]+'" class="'+(UI.tab===t[0]?'on':'')+'">'+t[1]+b+'</button>';}).join('')+'</nav>';
+  h+={timetable:vTimetable,plan:vPlan,rules:vRules,students:vStudents,check:vCheck,print:vPrint}[UI.tab]();
+  document.getElementById('app').innerHTML=h;
+  var pg=document.getElementById('pgs');
+  if(pg)pg.textContent='@page{size:A4 '+(UI.orient[UI.printType]==='port'?'portrait':'landscape')+'}';
+  window.scrollTo(0,y);
+}
+
+/* ================= 状態の更新 ================= */
+function setPath(path,val){
+  var p=path.split('.'),o=S;
+  for(var i=0;i<p.length-1;i++){if(o[p[i]]==null||typeof o[p[i]]!=='object')o[p[i]]={};o=o[p[i]];}
+  o[p[p.length-1]]=val;
+}
+function move(arr,i,d){var j=i+d;if(j<0||j>=arr.length)return;var t=arr[i];arr[i]=arr[j];arr[j]=t;}
+function done(){save();render();}
+var H={
+  tab:function(el){UI.tab=el.dataset.v;UI.confirm=null;done();},
+  mode:function(el){UI.mode=el.dataset.v;done();},
+  ptype:function(el){UI.printType=el.dataset.v;done();},
+  scope:function(el){UI.scope=el.dataset.v;done();},
+  pick:function(el){UI.sid=el.dataset.id;UI.tab=el.dataset.v;done();},
+  cell:function(el){UI.edit=el.dataset.key;render();var e=document.getElementById('editor');if(e&&e.scrollIntoView)e.scrollIntoView({block:'nearest'});},
+  closeEd:function(){UI.edit=null;render();},
+  slotDel:function(el){var st=cur(),k=el.dataset.key,id=el.dataset.item;st.slots[k]=(st.slots[k]||[]).filter(function(x){return x!==id;});if(!st.slots[k].length)delete st.slots[k];delete st.exceptions[k+'|'+id];done();},
+  slotClear:function(el){var st=cur(),k=el.dataset.key;(st.slots[k]||[]).forEach(function(id){delete st.exceptions[k+'|'+id];});delete st.slots[k];done();},
+  bulk:function(){var st=cur(),w=document.getElementById('bulkw').value;S.rules.forEach(function(r){var p=st.plan[r.id];if(!p||!p.where||p.where==='unset'){st.plan[r.id]=Object.assign({grade:'',cls:'',other:'',note:''},p||{},{where:w});}});done();},
+  rowMove:function(el){var i=+el.dataset.i;move(S.school.rows,i,+el.dataset.d);done();},
+  rowAdd:function(){S.school.rows.push({id:'r'+uid(),label:'新しい行'});done();},
+  rowDel:function(el){var k='row'+el.dataset.i;if(UI.confirm!==k){UI.confirm=k;return render();}
+    var r=S.school.rows.splice(+el.dataset.i,1)[0];S.students.forEach(function(s){Object.keys(s.slots).forEach(function(key){if(key.split('|')[1]===r.id){(s.slots[key]||[]).forEach(function(id){delete s.exceptions[key+'|'+id];});delete s.slots[key];}});});UI.confirm=null;UI.edit=null;done();},
+  ruleMove:function(el){move(S.rules,+el.dataset.i,+el.dataset.d);done();},
+  ruleAdd:function(el){S.rules.push({id:uid(),name:'新しい'+(el.dataset.k==='教科'?'教科':'活動'),kind:el.dataset.k,mode:'C',note:''});done();},
+  ruleDel:function(el){var k='rule'+el.dataset.i;if(UI.confirm!==k){UI.confirm=k;return render();}
+    var r=S.rules.splice(+el.dataset.i,1)[0];S.students.forEach(function(s){delete s.plan[r.id];Object.keys(s.slots).forEach(function(key){s.slots[key]=(s.slots[key]||[]).filter(function(x){return x!==r.id;});delete s.exceptions[key+'|'+r.id];if(!s.slots[key].length)delete s.slots[key];});});UI.confirm=null;done();},
+  stAdd:function(){var s=newStudent('児童生徒'+(S.students.length+1));S.students.push(s);UI.sid=s.id;done();},
+  stCopy:function(){var st=cur();if(!st)return;var c=JSON.parse(JSON.stringify(st));c.id=uid();c.name=st.name+'（コピー）';S.students.push(c);UI.sid=c.id;done();},
+  stDel:function(el){var k='st'+el.dataset.i;if(UI.confirm!==k){UI.confirm=k;return render();}S.students.splice(+el.dataset.i,1);UI.confirm=null;if(!S.students.length)S.students.push(newStudent('児童生徒1'));UI.sid=null;done();},
+  fix:function(el){UI.sid=el.dataset.sid;UI.tab=el.dataset.tab;UI.edit=el.dataset.key||null;UI.hl=el.dataset.item||null;UI.mode='teacher';render();
+    if(UI.hl){var r=document.getElementById('pl-'+UI.hl);if(r&&r.scrollIntoView)r.scrollIntoView({block:'center'});}
+    else{var e=document.getElementById('editor');if(e&&e.scrollIntoView)e.scrollIntoView({block:'nearest'});}},
+  print:function(){window.print();},
+  export:function(){
+    try{var b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='shien_jikanwari_data.json';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);UI.msg='書き出しました。';}
+    catch(e){UI.msg='書き出せませんでした。';}render();},
+  sample:function(){if(UI.confirm!=='sample'){UI.confirm='sample';return render();}S=sampleData();UI.confirm=null;UI.sid=null;UI.edit=null;done();},
+  blank:function(){if(UI.confirm!=='blank'){UI.confirm='blank';return render();}S=blankData();UI.confirm=null;UI.sid=null;UI.edit=null;done();}
+};
+var C={
+  sid:function(el){UI.sid=el.value;UI.edit=null;render();},
+  opt:function(el){UI.opt[el.dataset.k]=el.checked;render();},
+  orient:function(el){UI.orient[UI.printType]=el.value;render();},
+  slotAdd:function(el){if(!el.value)return;var st=cur(),k=el.dataset.key;(st.slots[k]=st.slots[k]||[]).push(el.value);done();},
+  excWhere:function(el){var st=cur(),key=el.dataset.key+'|'+el.dataset.item;
+    if(!el.value){delete st.exceptions[key];}else{st.exceptions[key]=Object.assign({grade:'',cls:'',other:'',note:''},st.exceptions[key]||{},{where:el.value});}done();}
+};
+document.addEventListener('click',function(e){
+  var el=e.target.closest('[data-a]');if(!el)return;
+  var f=H[el.dataset.a];if(f){if(el.tagName==='LABEL')return;f(el);}
+});
+document.addEventListener('keydown',function(e){
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('td[data-a="cell"]')){e.preventDefault();H.cell(e.target);}
+});
+document.addEventListener('change',function(e){
+  var el=e.target;
+  if(el.id==='imp'&&el.files&&el.files[0]){
+    var fr=new FileReader();fr.onload=function(){try{var d=JSON.parse(fr.result);if(!(d&&d.school&&d.rules&&d.students))throw new Error('x');S=d;UI.sid=null;UI.edit=null;UI.msg='読みこみました。';done();}catch(err){UI.msg='読みこめませんでした。このアプリで書き出したファイルを選んでください。';render();}};fr.readAsText(el.files[0]);return;
+  }
+  if(el.dataset&&el.dataset.c&&C[el.dataset.c]){C[el.dataset.c](el);return;}
+  if(el.dataset&&el.dataset.b){
+    var v=el.type==='checkbox'?el.checked:el.value;
+    if(el.dataset.n)v=+v;
+    setPath(el.dataset.b,v);
+    if(el.dataset.b.indexOf('.where')>-1&&el.dataset.b.indexOf('.plan.')>-1){
+      var p=el.dataset.b.split('.');var obj=S[p[0]][p[1]][p[2]][p[3]];['grade','cls','other','note'].forEach(function(k){if(obj[k]==null)obj[k]='';});
+    }
+    save();
+    if(el.dataset.r)render();
+    else{
+      /* 文字入力のあとの再描画は少し待つ（直後のボタン操作を邪魔しないため） */
+      UI.dirty=true;clearTimeout(UI.timer);
+      UI.timer=setTimeout(function(){if(UI.dirty){var a=document.activeElement;if(!a||a===document.body||!/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))render();}},500);
+    }
+  }
+});
+/* ================= 起動 ================= */
+S=load();
+render();
+window.__app={get S(){return S;},get UI(){return UI;},resolve:resolve,issues:issues,render:render,H:H,C:C,sampleData:sampleData,setS:function(d){S=d;}};
+})();
+</script>
+</body>
+</html>
