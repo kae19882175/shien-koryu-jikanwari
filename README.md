@@ -1,0 +1,865 @@
+[chugaku_seikatsu_latest.html](https://github.com/user-attachments/files/35072288/chugaku_seikatsu_latest.html)
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中学校支援学級「生活単元学習」3候補選択＆重度〜軽度対応メーカー</title>
+<style>
+  :root {
+    --primary: #1e3d4f;
+    --primary-light: #e3edf2;
+    --accent: #d97757;
+    --bg: #f8fafc;
+    --text: #2d3748;
+    --border: #cbd5e1;
+    --lv1-bg: #fff5f5; --lv1-bd: #feb2b2; --lv1-tx: #9b2c2c;
+    --lv2-bg: #f0fff4; --lv2-bd: #9ae6b4; --lv2-tx: #22543d;
+    --lv3-bg: #ebf8ff; --lv3-bd: #90cdf4; --lv3-tx: #2a4365;
+  }
+  * { box-sizing: border-box; font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif; }
+  body { background: var(--bg); color: var(--text); margin: 0; padding: 16px; line-height: 1.5; }
+  .container { max-width: 1240px; margin: 0 auto; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  
+  header { border-bottom: 2px solid var(--primary-light); padding-bottom: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+  .badge { display: inline-block; background: var(--accent); color: #fff; font-size: 0.75rem; font-weight: bold; padding: 2px 10px; border-radius: 12px; margin-bottom: 6px; }
+  h1 { font-size: 1.35rem; color: var(--primary); margin: 0; }
+  .subtitle { font-size: 0.85rem; color: #4a5568; margin-top: 4px; }
+  
+  .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  button { cursor: pointer; border: none; border-radius: 6px; padding: 9px 14px; font-weight: bold; font-size: 0.85rem; transition: 0.15s; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-accent { background: var(--accent); color: #fff; }
+  .btn-accent:hover { opacity: 0.9; }
+  .btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+  .btn-outline:hover { background: var(--primary-light); }
+  .btn-danger { background: #fff; color: #c53030; border: 1px solid #c53030; }
+
+  .meta-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-bottom: 18px; background: #fffbeb; padding: 14px; border-radius: 8px; border: 1px solid #fef3c7; }
+  .meta-inputs label { display: block; font-size: 0.8rem; font-weight: bold; color: #b45309; margin-bottom: 4px; }
+  .meta-inputs input { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; background: #fff; }
+
+  .grid-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  .grid-table th, .grid-table td { border: 1px solid var(--border); padding: 12px; vertical-align: top; }
+  .grid-table th { background: #edf2f7; font-size: 0.85rem; text-align: left; color: var(--primary); }
+  .month-col { width: 80px; font-weight: bold; text-align: center !important; font-size: 1.05rem; background: #f7fafc; }
+
+  .unit-card { background: #fff; border: 1px solid #cbd5e1; border-left: 6px solid var(--primary); border-radius: 8px; padding: 14px; margin-bottom: 10px; position: relative; }
+  .unit-header { margin-bottom: 8px; padding-right: 28px; }
+  .unit-tag { display: inline-block; font-size: 0.72rem; background: var(--primary-light); color: var(--primary); padding: 2px 8px; border-radius: 4px; font-weight: bold; margin-bottom: 4px; }
+  .unit-title { font-weight: bold; font-size: 1.05rem; color: #1a202c; }
+  .unit-perspectives { display: grid; grid-template-columns: 1fr; gap: 5px; margin-top: 8px; background: #f8fafc; padding: 8px 10px; border-radius: 6px; border-left: 3px solid var(--primary); font-size: 0.8rem; }
+  .p-row { color: #334155; }
+  .p-lbl { font-weight: bold; color: var(--primary); }
+
+  .levels-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; margin-top: 10px; }
+  .lv-box { padding: 10px; border-radius: 6px; border: 1px solid; font-size: 0.82rem; }
+  .lv-1 { background: var(--lv1-bg); border-color: var(--lv1-bd); }
+  .lv-1 .lv-badge { background: var(--lv1-tx); color: #fff; }
+  .lv-2 { background: var(--lv2-bg); border-color: var(--lv2-bd); }
+  .lv-2 .lv-badge { background: var(--lv2-tx); color: #fff; }
+  .lv-3 { background: var(--lv3-bg); border-color: var(--lv3-bd); }
+  .lv-3 .lv-badge { background: var(--lv3-tx); color: #fff; }
+  
+  .lv-badge { display: inline-block; font-size: 0.72rem; font-weight: bold; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; }
+  .lv-role { font-weight: bold; margin-bottom: 4px; color: #1a202c; }
+  .lv-env { color: #334155; background: rgba(255,255,255,0.8); padding: 5px 7px; border-radius: 4px; margin-top: 4px; }
+
+  .add-btn { width: 100%; padding: 9px; background: #fff; border: 1px dashed var(--primary); color: var(--primary); border-radius: 6px; font-size: 0.85rem; font-weight: bold; cursor: pointer; }
+  .add-btn:hover { background: var(--primary-light); }
+  .del-unit { position: absolute; top: 10px; right: 10px; background: none; color: #a0aec0; padding: 4px 8px; font-size: 0.9rem; cursor: pointer; border: none; }
+  .del-unit:hover { color: #c53030; }
+
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); justify-content: center; align-items: center; z-index: 1000; padding: 16px; }
+  .modal { background: #fff; border-radius: 12px; max-width: 860px; width: 100%; max-height: 92vh; overflow-y: auto; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+  .modal h2 { margin-top: 0; font-size: 1.15rem; color: var(--primary); border-bottom: 2px solid var(--primary-light); padding-bottom: 8px; }
+  .proposal-note { font-size: 0.83rem; color: #4a5568; background: #fffaf0; border-left: 4px solid var(--accent); padding: 8px 12px; margin-bottom: 14px; }
+  
+  .three-candidates { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin: 12px 0 16px; }
+  .candidate-card { border: 2px solid var(--border); padding: 12px; border-radius: 8px; cursor: pointer; text-align: left; background: #fafafa; transition: 0.15s; display: flex; flex-direction: column; justify-content: space-between; }
+  .candidate-card:hover { border-color: var(--primary); background: var(--primary-light); }
+  .candidate-card.selected { border-color: var(--accent); background: #fff9f5; box-shadow: 0 2px 8px rgba(217,119,87,0.2); }
+  .cand-num { display: inline-block; font-size: 0.7rem; font-weight: bold; background: var(--primary); color: #fff; padding: 2px 7px; border-radius: 4px; margin-bottom: 4px; }
+  .candidate-card.selected .cand-num { background: var(--accent); }
+  .candidate-card strong { display: block; color: var(--primary); font-size: 0.92rem; margin: 4px 0; }
+  .candidate-card .c-desc { font-size: 0.76rem; color: #4a5568; line-height: 1.4; }
+
+  .form-group { margin-bottom: 10px; }
+  .form-group label { display: block; font-size: 0.82rem; font-weight: bold; margin-bottom: 3px; color: #2d3748; }
+  .form-group input, .form-group textarea { width: 100%; padding: 7px 9px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.86rem; }
+  .form-group textarea { height: 50px; resize: vertical; }
+
+  .level-edit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 12px; }
+  .check-inline { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: bold; margin-bottom: 6px; cursor: pointer; }
+
+  .footer-note { font-size: 0.8rem; color: #718096; text-align: center; margin-top: 20px; border-top: 1px solid #edf2f7; padding-top: 12px; }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .container { box-shadow: none; padding: 0; max-width: 100%; }
+    .btn-group, .add-btn, .del-unit, .footer-note { display: none !important; }
+    .grid-table th, .grid-table td { padding: 6px 8px; font-size: 0.78rem; }
+    .unit-card { break-inside: avoid; border: 1px solid #64748b; border-left: 5px solid #1e3d4f; padding: 8px; }
+    .levels-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div>
+      <span class="badge">最新学習指導要領の視点準拠・3候補選択式</span>
+      <h1>🌱 生活単元学習「3つの候補から選択＆重度〜軽度対応」メーカー</h1>
+      <div class="subtitle">毎月3つの授業アイデアから選び、選択した単元ごとに【重度・中度・軽度】の活動と「引き算の環境設計」を自動展開します</div>
+    </div>
+    <div class="btn-group">
+      <button class="btn-accent" onclick="loadSampleAll()">✨ 各月のおすすめ第1候補を一括セット</button>
+      <button class="btn-primary" onclick="window.print()">🖨️ A4で印刷・PDF保存</button>
+      <button class="btn-danger" onclick="clearAll()">リセット</button>
+    </div>
+  </header>
+
+  <div class="meta-inputs">
+    <div>
+      <label>年度・学級名</label>
+      <input type="text" id="className" placeholder="例：令和9年度 ○○中学校 特別支援学級" oninput="saveMeta()">
+    </div>
+    <div>
+      <label>在籍生徒の実態構成（重度〜軽度・特性メモ）</label>
+      <input type="text" id="studentMemo" placeholder="例：重度1名（スイッチ・感覚）、中度2名（手順書自立）、軽度2名（進行・対人）" oninput="saveMeta()">
+    </div>
+    <div>
+      <label>💡 今年度の「引き算の環境設計」テーマ</label>
+      <input type="text" id="themeMemo" placeholder="例：口頭指示や過剰な選択肢を引き算し、自分で動ける環境をつくる" oninput="saveMeta()">
+    </div>
+  </div>
+
+  <table class="grid-table">
+    <thead>
+      <tr>
+        <th class="month-col">月</th>
+        <th>選択された生活単元・学習指導要領の3視点（集団参加／自立活動／各教科等を合わせた指導）・【重度 / 中度 / 軽度】別の取り組みと引き算設計</th>
+      </tr>
+    </thead>
+    <tbody id="planBody"></tbody>
+  </table>
+
+  <div class="footer-note">
+    制作：支援級ママと担任の駆け込み寺 にこ ｜ 個別最適な学びと協働的な学びの一体化・引き算の環境設計に基づく実践ツール
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle">月の生活単元アイデア（3候補）から選択</h2>
+    <div class="proposal-note">
+      💡 <strong>ステップ1：</strong>下の<strong>3つのアイデア</strong>から学級に合うものを選んでください。<br>
+      <strong>ステップ2：</strong>選んだ単元に紐づく「重度・中度・軽度」の取り組みと引き算設計が下に反映されるので、採用したいレベルにチェックを入れて登録します。
+    </div>
+
+    <div class="three-candidates" id="candidateList"></div>
+
+    <hr style="border:0; border-top:1px solid #e2e8f0; margin:14px 0;">
+    <div class="form-group">
+      <label>選択・編集中の単元名</label>
+      <input type="text" id="inputTitle">
+    </div>
+    <div class="form-group">
+      <label>① 集団参加の視点（協働的な学び・他者との関わり）</label>
+      <input type="text" id="inGroup">
+    </div>
+    <div class="form-group">
+      <label>② 自立活動の視点（健康保持・心理的安定・人間関係・環境の把捉・身体の動き・コミュニケーション）</label>
+      <input type="text" id="inJiritsu">
+    </div>
+    <div class="form-group">
+      <label>③ 各教科等を合わせた指導の視点（生活課題の解決・基礎的技能の活用）</label>
+      <input type="text" id="inKyoka">
+    </div>
+
+    <p style="font-size:0.85rem; font-weight:bold; color:var(--primary); margin:10px 0 6px;">▼ この単元で採用するレベル（重度・中度・軽度）を選択・微調整</p>
+    <div class="level-edit-grid">
+      <div style="background:var(--lv1-bg); padding:10px; border-radius:6px; border:1px solid var(--lv1-bd);">
+        <label class="check-inline" style="color:var(--lv1-tx);">
+          <input type="checkbox" id="useLv1" checked> 🔴 重度・基礎ステップ
+        </label>
+        <div class="form-group">
+          <label>取り組み・役割</label>
+          <textarea id="inLv1Role"></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label>💡 引き算の環境設計</label>
+          <textarea id="inLv1Env"></textarea>
+        </div>
+      </div>
+
+      <div style="background:var(--lv2-bg); padding:10px; border-radius:6px; border:1px solid var(--lv2-bd);">
+        <label class="check-inline" style="color:var(--lv2-tx);">
+          <input type="checkbox" id="useLv2" checked> 🟢 中度・構造化ステップ
+        </label>
+        <div class="form-group">
+          <label>取り組み・役割</label>
+          <textarea id="inLv2Role"></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label>💡 引き算の環境設計</label>
+          <textarea id="inLv2Env"></textarea>
+        </div>
+      </div>
+
+      <div style="background:var(--lv3-bg); padding:10px; border-radius:6px; border:1px solid var(--lv3-bd);">
+        <label class="check-inline" style="color:var(--lv3-tx);">
+          <input type="checkbox" id="useLv3" checked> 🔵 軽度・発展ステップ
+        </label>
+        <div class="form-group">
+          <label>取り組み・役割</label>
+          <textarea id="inLv3Role"></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label>💡 引き算の環境設計</label>
+          <textarea id="inLv3Env"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;">
+      <button class="btn-outline" onclick="closeModal()">キャンセル</button>
+      <button class="btn-primary" onclick="saveUnit()">この単元を年間計画に追加する</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const MONTHS = ["4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月", "1月", "2月", "3月"];
+
+const PROPOSALS = {
+  "4月": [
+    {
+      cat: "自己理解・安心の居場所づくり",
+      title: "みんなの「マイ・トリセツ（取扱説明書）」＆安心ルールづくり",
+      group: "互いの得意や安心できる関わり方を知り、クラス全員が安心して過ごせる集団基盤をつくる",
+      jiritsu: "【心理的な安定・自己の理解】自分の感覚特性や困り感、落ち着く方法を把握し、安心して過ごせる環境を選ぶ",
+      kyoka: "【国語・道徳・家庭】自分の好きなことや大切にしたいルールを整理し、言葉や視覚資料で表現・共有する",
+      lv1: { role: "好きな音・色・遊びのカード（2択）を選び、スイッチ音声や表情でみんなに紹介する", env: "選択肢を2つに絞り、身体が安定する姿勢保持と専用スイッチを配置。口頭質問をなくす" },
+      lv2: { role: "「好きなこと」「手伝ってほしいこと」をイラストシールでシートに貼り、定型文で発表する", env: "白紙に書かせることを引き算し、貼るだけで完成する選択式シートと読み上げカードを用意" },
+      lv3: { role: "自分の感覚特性やパニック時の対処法を言語化し、司会進行や友達への質問役も担う", env: "「話したくない項目はパスOK」のルールと質問例リストを提示し、対人緊張を引き算" }
+    },
+    {
+      cat: "日課の構造化・見通し",
+      title: "中学校の1日＆1年を攻略！「見通しカレンダー＆時間割」作戦",
+      group: "クラス共通の日課や行事の見通しを共有し、協力して朝の支度や帰りの会を進める",
+      jiritsu: "【環境の把捉・健康の保持】時間の流れや空間の構造を理解し、見通しをもって生活リズムを整える",
+      kyoka: "【算数・生活】時計やカレンダーの読み方、1日の予定の並び順を理解し、必要な持ち物を揃える",
+      lv1: { role: "朝の会・帰りの会で「今」のマークをボードに貼り、次の活動への移行サインを受け取る", env: "活動ごとの視覚カードを大きく明瞭にし、移動前の予告時間を長めに確保して急な切り替えをなくす" },
+      lv2: { role: "自分のロッカーや持ち物リストを見て、その日の授業に必要な教材を自分で準備する", env: "持ち物リストを写真付きにし、不要な教材を机上から引き算して迷いを減らす" },
+      lv3: { role: "学級全体の週間スケジュールや行事予定を整理し、予定変更時のアナウンスや連絡係を担う", env: "予定変更があった場合の「変更予告カード」の運用ルールをクラスで統一しておく" }
+    },
+    {
+      cat: "校内環境・人間関係",
+      title: "中学校探検＆先生方へのインタビュー・案内マップ作り",
+      group: "小グループで役割を分担して校内を巡り、協力しながら1つの案内マップを完成させる",
+      jiritsu: "【コミュニケーション・環境の把捉】校内の場所や人の役割を理解し、状況に応じた伝え方を選ぶ",
+      kyoka: "【国語・社会・美術】質問の組み立て、礼儀正しい挨拶、地図やイラストを用いた分かりやすい表現",
+      lv1: { role: "特別教室の空間や音・感触を体感し、チェック用の大きなスタンプを押して回る", env: "バリアフリー動線を固定し、音が大きい場所ではイヤーマフ等で刺激を引き算" },
+      lv2: { role: "職員室や保健室への入室マナーを手順通りに行い、質問カードを渡して答えを受け取る", env: "入室のセリフと手順を1枚のカードにまとめ、暗記やアドリブの負担を引き算" },
+      lv3: { role: "インタビュー内容をタブレットで記録・まとめ、新入生や校内向けの案内マップを制作する", env: "取材項目を3つ以内に絞り、テンプレートに沿って整理することで情報過多を防ぐ" }
+    }
+  ],
+  "5月": [
+    {
+      cat: "健康管理・季節の生活",
+      title: "気候の変化に負けない！「服装調整＆セルフケア」マスター",
+      group: "クラスの室温や天気に応じてみんなで声を掛け合い、快適な学習環境を協働でつくる",
+      jiritsu: "【健康の保持】気温や体調の変化に気づき、衣服の調整や休息を適切に行う",
+      kyoka: "【保健体育・理科】気温・湿度と体調の関係を理解し、衛生管理や生活習慣を実践する",
+      lv1: { role: "暑い・寒い・疲れたのサインをカードや表情で示し、上着の着脱や水分補給を行う", env: "着脱しやすい前開きやマジックテープ式の衣服を推奨し、毎回口頭で着替えを促さない" },
+      lv2: { role: "朝の健康観察や気温チェックを見て、その日の服装や水分量を自分で判断して整える", env: "「気温と服装の目安表」を教室に掲示し、自分で見て選べる環境をつくる" },
+      lv3: { role: "教室の換気・冷暖房管理や保健係として、体調変化に気づいた時の対応や記録を担う", env: "換気や水分補給のタイミングをタイマーで視覚化し、係の負担を過重にしない" }
+    },
+    {
+      cat: "ICT活用・表現活動",
+      title: "タブレットで作ろう！「私たちの推し・得意」紹介スライド",
+      group: "互いの作品を見せ合い、良いところを伝え合うことで肯定的な集団雰囲気をつくる",
+      jiritsu: "【コミュニケーション・自己の理解】ICT等の手段を活用して自分の考えや特徴を表現する",
+      kyoka: "【国語・技術・美術】伝えたい要点を整理し、写真・文字・音声を組み合わせて分かりやすく構成する",
+      lv1: { role: "撮った写真や好きな画像を選び、タップやスイッチ操作でスライドをめくって見せる", env: "操作ボタンを大きくし、画面上の余計なメニューや装飾を引き算して集中させる" },
+      lv2: { role: "短い文やキーワードを入力し、写真と組み合わせて自分の紹介ページを完成させる", env: "スライドの型（テンプレート）を用意し、レイアウトに迷う時間を引き算する" },
+      lv3: { role: "構成やナレーションを工夫してプレゼン資料を作り、質問に答えながら発表を進める", env: "発表原稿は箇条書き3点に絞り、読み上げに終始せず対話を楽しめる構成にする" }
+    },
+    {
+      cat: "校外学習・公共マナー",
+      title: "校外ウォーク＆公園・地域スポットの安全マップづくり",
+      group: "班ごとにペースを合わせ、安全に目的地へ到達できるよう互いに見守り合いながら歩く",
+      jiritsu: "【環境の把捉・健康の保持】道路や公共空間の危険を予測し、安全な移動と体力配分を行う",
+      kyoka: "【保健体育・社会・理科】交通ルールや地図記号を理解し、自然や地域の様子を観察する",
+      lv1: { role: "安全なルートを教員や支援者と共に歩き、自然の風や草花・光の感覚を味わう", env: "段差や交通量の多い道を避けた安全なコースを設定し、休憩ポイントを事前に確保" },
+      lv2: { role: "コースマップを見ながら曲がり角や横断歩道を確認し、信号や左右確認を自分で行う", env: "曲がるポイントを写真付きマップで明示し、口頭での先回り指示を引き算" },
+      lv3: { role: "班のルート案内や時間管理、安全確認のリーダーを務め、マップのまとめを作成する", env: "集合時刻やチェックポイントを明確にし、班員が自分で動ける余白を残す" }
+    }
+  ],
+  "6月": [
+    {
+      cat: "栽培・生産と販売",
+      title: "夏野菜の栽培＆校内ミニマルシェ（収穫・販売）プロジェクト",
+      group: "「育てる・作る・売る」の役割を分担し、学級全体で1つのプロジェクトをやり遂げる",
+      jiritsu: "【環境の把捉・人間関係の形成】植物の成長変化を捉え、役割分担を通して他者と協力する",
+      kyoka: "【理科・数学・家庭】植物の育成条件や収穫物の扱い、お金の計算や値札づくりを学ぶ",
+      lv1: { role: "土や葉の感触を味わい、高床式プランターへの苗置きや軽量じょうろでの水やりを行う", env: "車椅子や座位でも手が届く高さにプランターを配置し、握りやすい補助具を用意" },
+      lv2: { role: "毎日の水やり・雑草抜き・収穫の定型作業を、手順書と当番表を見て一人で行う", env: "じょうろに水位ラインを引き、収穫サイズの目安リングで判断基準を明確化" },
+      lv3: { role: "PRポスター制作、販売価格の設定、先生方への呼び込み・会計・在庫管理を担当する", env: "100円単位などの分かりやすい価格設定にして計算ミスや焦りを引き算" }
+    },
+    {
+      cat: "調理・食生活",
+      title: "旬の食材でクッキング＆栄養バランス朝ごはん作戦",
+      group: "調理工程を分担して協力し、安全に気を配りながらみんなで食事を楽しむ",
+      jiritsu: "【健康の保持・身体の動き】包丁や火・道具を安全に扱い、食事のマナーや体調を整える",
+      kyoka: "【家庭・保健体育】食材の特徴や栄養、計量や手順に沿った調理・片付けを学ぶ",
+      lv1: { role: "食材を洗う・混ぜる・お盆に並べるなど、安全で負担の少ない工程を担当する", env: "火や刃物の危険工程を引き算し、滑り止めマットや座ってできる作業台を整備" },
+      lv2: { role: "レシピの手順カードを見ながら、計量や盛り付け・後片付けを順番に行う", env: "計量カップに色ラインを引き、工程を3〜4ステップに絞って見通しを持たせる" },
+      lv3: { role: "献立や分量の計算、全体の時間管理、衛生確認やアレルギー・配慮事項のチェックを担う", env: "調理タイムラインを共有し、直前の慌ただしさや手順の重複を引き算する" }
+    },
+    {
+      cat: "梅雨の室内活動・協働ゲーム",
+      title: "雨の日を楽しく！「オリジナル室内レク・ボッチャ大会」",
+      group: "チームの作戦を相談し、勝ち負けだけでなく互いのナイスプレーを称え合う雰囲気をつくる",
+      jiritsu: "【身体の動き・心理的な安定】力加減や狙いを調整し、感情の起伏を整えながらゲームに参加する",
+      kyoka: "【保健体育・数学】投球や転がしのコントロール、得点計算やルール・リーグ表の作成",
+      lv1: { role: "ランプや補助具（勾配具）を使ったり、自分の投げやすい距離からボールを転がしたりする", env: "投球距離やルールのハードルを引き算し、全員が必ず成功体験を得られる場を設定" },
+      lv2: { role: "狙いを定めてボールを投げ、審判や得点板の操作をルールに沿って行う", env: "得点計算表を分かりやすくし、ルールをシンプル化して判定の揉め事を減らす" },
+      lv3: { role: "トーナメント表やルール説明の作成、試合の進行・審判やチームの作戦まとめを担う", env: "審判基準を事前に明文化し、感情的な言い争いになりにくい仕組みをつくる" }
+    }
+  ],
+  "7月": [
+    {
+      cat: "環境整備・整理整頓",
+      title: "1学期の感謝を込めて！教室・ロッカー大掃除＆整理整頓",
+      group: "共有スペースや自分の持ち場を分担してきれいにし、気持ちよく1学期を締めくくる",
+      jiritsu: "【環境の把捉・身体の動き】整理された環境を心地よいと感じ、拭く・片付ける動作を工夫する",
+      kyoka: "【家庭・技術】汚れの種類や掃除道具の使い分け、物の定位置管理と分類を学ぶ",
+      lv1: { role: "水拭きや乾拭き、布巾をカゴに入れるなど、枠内のシンプルな動作に取り組む", env: "拭く範囲をテープで区切り、「ここまででOK」と終わりの基準を明確に引き算" },
+      lv2: { role: "ロッカーや机の中を出し、写真ラベルと同じ場所に教材や道具を戻して整頓する", env: "「残すもの・持ち帰るもの」の箱を分け、口頭指示を減らして自分で判断させる" },
+      lv3: { role: "掃除エリアの分担表やチェックリストを作成し、道具の片付け・点検や進行管理を行う", env: "掃除時間を15〜20分に区切り、だらだらと長引かせず集中力を維持させる" }
+    },
+    {
+      cat: "夏休みの計画・自己管理",
+      title: "夏休みをデザインしよう！生活リズム表＆お出かけプラン",
+      group: "夏休みの過ごし方の工夫を共有し、それぞれの目標を応援し合う",
+      jiritsu: "【健康の保持・自己の理解】長期休みの生活リズムやメディア利用のバランスを自分で考える",
+      kyoka: "【家庭・社会・国語】1日の時間配分、地域の施設や交通手段の調べ方、計画表の作成",
+      lv1: { role: "朝起きる・食べる・遊ぶ・寝るの基本リズムを、大きな絵カードで確認する", env: "細かい時間指定を引き算し、「朝・昼・夕方・夜」のざっくりした流れで提示" },
+      lv2: { role: "夏休みの日課表と、家庭で続ける1つの「お手伝い・運動」を自分で選んで決める", env: "やることを詰め込みすぎず、「毎日1つだけ」に絞って達成感を優先する" },
+      lv3: { role: "スマホ・ゲームのルール設定や、行きたい場所の費用・移動手段を調べたプラン表を作る", env: "「困った時の相談先・連絡先」を必ず明記し、安全な行動計画に落とし込む" }
+    },
+    {
+      cat: "暑さ対策・防災啓発",
+      title: "夏の安全を守ろう！「熱中症予防＆水辺・外出安全」講座",
+      group: "危険な場面をみんなで考え、夏を安全に乗り切るための合言葉を共有する",
+      jiritsu: "【健康の保持・環境の把捉】暑さや危険な環境を予測し、自分の身を守る行動をとる",
+      kyoka: "【保健体育・理科】熱中症の仕組みと予防法、水筒・帽子・日陰の活用や緊急時の対応",
+      lv1: { role: "冷たいタオルや水分補給のタイミングを体験し、暑い時のサインに気づく", env: "水分補給の時間をタイマー等で知らせ、我慢せず飲める環境を常時確保" },
+      lv2: { role: "熱中症になりやすい場面や対策をカードで選び、「危険・安全」の判断をする", env: "専門用語を避け、写真やイラストで「どうすればいいか」を具体的に示す" },
+      lv3: { role: "暑さ指数（WBGT）の見方や対策ポスター・クイズを作成し、みんなに分かりやすく伝える", env: "伝えるポイントを3つに絞り、難しい説明を省いてシンプルにまとめる" }
+    }
+  ],
+  "8月": [
+    {
+      cat: "家庭連携・生活リズム維持",
+      title: "おうちでチャレンジ！「マイ役割」と夏休み生活記録",
+      group: "休み明けに家庭での工夫や頑張りを持ち寄り、互いの夏を認め合う",
+      jiritsu: "【健康の保持・心理的な安定】家庭生活でも規則正しいリズムを保ち、安心して過ごす",
+      kyoka: "【家庭・国語】家庭での手伝いや生活記録の記入、出来事の整理と振り返り",
+      lv1: { role: "家庭で決めた朝の挨拶や好きな遊び・休息を、保護者と一緒に心地よく続ける", env: "家庭に負担をかけないよう、1日1つの小さなチェック項目だけに引き算" },
+      lv2: { role: "洗濯物たたみ・食器並べ・ゴミまとめなど、決まったお手伝いを手順通りに行う", env: "手順のイラストカードを家庭にも渡し、学校と同じ方法で取り組めるようにする" },
+      lv3: { role: "生活リズムの振り返りや自由研究・体験記録をまとめ、休み明けの発表準備をする", env: "完璧を求めず、「やってみて分かったこと・工夫したこと」に焦点を当てる" }
+    },
+    {
+      cat: "余暇・趣味の深化",
+      title: "好きなことを深めよう！夏休みの「マイ・コレクション＆作品」",
+      group: "それぞれの好きなものや興味関心を尊重し、多様な個性を認め合う",
+      jiritsu: "【心理的な安定・自己の理解】好きな活動を通して心を整え、自分の興味や得意を自覚する",
+      kyoka: "【美術・国語・技術】作品制作や資料整理、好きなテーマについての紹介文・展示づくり",
+      lv1: { role: "好きな色・形・音・キャラクター等を使った制作や鑑賞を、ゆったり楽しむ", env: "時間制限や枠にとらわれず、本人のペースで没頭できる時間を確保" },
+      lv2: { role: "集めた写真や作った作品を台紙にまとめ、タイトルや一言コメントをつける", env: "コメントは穴埋め式や選択式にして、書くことへの抵抗感を減らす" },
+      lv3: { role: "テーマに沿って調べたり制作したりした成果を整理し、プレゼンや展示で魅力を伝える", env: "説明の構成をシンプルにし、聞き手がイメージしやすい具体例を添える" }
+    },
+    {
+      cat: "2学期スタート・見通し",
+      title: "2学期に向けて心と体を整えよう！リスタート準備作戦",
+      group: "長い休みの終わりの気持ちを分かち合い、2学期のスタートをみんなで支え合う",
+      jiritsu: "【心理的な安定・健康の保持】休み明けの不安や疲れを和らげ、学校生活のリズムに戻す",
+      kyoka: "【道徳・国語・保健体育】気持ちの表現、2学期の目標や行事の確認、生活習慣の見直し",
+      lv1: { role: "慣れた教室の環境や好きな活動から再開し、安心感を取り戻しながら過ごす", env: "初日から詰め込みすぎず、慣らしの活動や個別のクールダウン時間を十分に確保" },
+      lv2: { role: "夏休みの持ち物を確認し、2学期最初の週のスケジュールを見て見通しを持つ", env: "持ち物チェックリストをシンプルにし、忘れ物があっても責めない環境をつくる" },
+      lv3: { role: "2学期の大きな行事（体育祭・文化祭等）に向けた目標を立て、クラスの準備を進める", env: "目標を欲張りすぎず、「まず2学期前半で意識すること」に絞って設定する" }
+    }
+  ],
+  "9月": [
+    {
+      cat: "防災・危機回避と食生活",
+      title: "もしもに備える！防災サバイバル＆ポリ袋クッキング",
+      group: "災害時の助け合いや役割分担を考え、グループで協力して訓練や調理を行う",
+      jiritsu: "【環境の把捉・健康の保持】災害時の危険を予測し、安全な避難行動や非常食の工夫を学ぶ",
+      kyoka: "【家庭・社会・保健体育】防災知識、ポリ袋調理の手順、避難経路や安全確認の方法",
+      lv1: { role: "防災頭巾の着用、非常食の試食、避難合図の確認を落ち着いて行う", env: "突然の大きな音や変更によるパニックを防ぐため、事前予告とイヤーマフを用意" },
+      lv2: { role: "ポリ袋に食材を入れて混ぜる工程や、配膳・片付けを手順書通りに行う", env: "計量に色ラインや専用カップを使い、火や刃物の危険工程を引き算" },
+      lv3: { role: "調理の時間管理、防災グッズの点検リスト作成、避難ルートの安全確認リーダーを担う", env: "工程ごとの時間表を掲示し、慌ただしい場面でも落ち着いて指示を出せるようにする" }
+    },
+    {
+      cat: "体育的行事・身体表現",
+      title: "みんなで心をひとつに！体育祭・運動会「応援＆競技」作戦",
+      group: "それぞれの得意やペースを活かし、学級全体で応援し合いながら行事に参加する",
+      jiritsu: "【身体の動き・心理的な安定】体を動かす心地よさを味わい、刺激の強い場面でも落ち着いて参加する",
+      kyoka: "【保健体育・音楽】基本の運動技能、リズムや応援の表現、ルールやマナーの遵守",
+      lv1: { role: "スタートや合図のスイッチ押し、応援フラッグ振り、自分のペースでの参加・休憩", env: "大音量の近くや長時間の待機を引き算し、別室・日陰などの休憩場所を明確に用意" },
+      lv2: { role: "競技のルールや自分の出番の順番を確認し、練習の成果を発揮して取り組む", env: "出番の順番を視覚カードで示し、勝敗よりも「やり切ったこと」を称える" },
+      lv3: { role: "応援の掛け声や隊形・進行の工夫、チームの士気を高める声かけやまとめを担う", env: "無理な負荷や過度な緊張を避け、自分の役割を無理なく果たせる範囲に調整" }
+    },
+    {
+      cat: "地域の秋・自然体験",
+      title: "秋の実りと季節の変化を探そう！校外観察＆収穫体験",
+      group: "秋の自然や地域素材を見つけ合い、感じたことを共有して学びを深める",
+      jiritsu: "【環境の把捉・身体の動き】季節の移り変わりを五感で捉え、屋外での活動を安全に楽しむ",
+      kyoka: "【理科・美術・国語】秋の植物や気候の変化、自然素材を使った制作や観察記録",
+      lv1: { role: "落ち葉や木の実・風の感触を味わい、安心できる場所で秋の自然に触れる", env: "歩きにくい足場や長時間の歩行を引き算し、座って楽しめる活動も用意" },
+      lv2: { role: "秋の素材を集めたり写真を撮ったりして、観察カードやクラフト作品に仕上げる", env: "集める数やテーマを絞ることで、迷わず活動に集中できるようにする" },
+      lv3: { role: "季節の変化を調べたり記録したりし、秋ならではの工夫や発見をみんなに伝える", env: "記録のフォーマットを整え、事実と自分の感想を分けて整理しやすくする" }
+    }
+  ],
+  "10月": [
+    {
+      cat: "文化祭・作業製品の制作と販売",
+      title: "文化祭「わくわく工房＆ショップ」みんなで創る大作戦",
+      group: "製品の制作・検品・接客・片付けを分担し、学級全員で文化祭の企画を作り上げる",
+      jiritsu: "【コミュニケーション・自己の理解】働く喜びや達成感を味わい、人との関わり方を学ぶ",
+      kyoka: "【美術・技術・数学・国語】作業製品の制作、数の管理や価格設定、案内や接客の表現",
+      lv1: { role: "パーツの色塗り・スタンプ押し、スイッチでの呼び込み音出し、作品運びの補助", env: "人混みや大きな音による疲労を引き算し、交代で休めるローテーションを組む" },
+      lv2: { role: "製品の組み立て・検品・値札貼り・陳列などを、手順書と型枠を使って丁寧に行う", env: "治具（型枠）や見本を置き、誰でも迷わず一定のクオリティで作れるようにする" },
+      lv3: { role: "受付や接客応対、在庫・売上の管理、ステージや展示の説明・司会進行を担う", env: "接客の定型フレーズや想定Q&Aを用意し、初めての対応への不安を引き算" }
+    },
+    {
+      cat: "ステージ発表・表現活動",
+      title: "みんなの力を届けよう！文化祭ステージ発表プロデュース",
+      group: "互いの出番を支え合い、一人ひとりが輝けるステージ構成をみんなで創り上げる",
+      jiritsu: "【コミュニケーション・心理的な安定】大勢の前でも自分のペースで表現し、達成感を得る",
+      kyoka: "【音楽・国語・保健体育】声量や発音・リズムに合わせた表現、台本やスライドの構成",
+      lv1: { role: "合図に合わせた楽器・効果音・映像操作、または安心できる位置での参加・表現", env: "ステージ上の照明や音、立ち位置を事前に確認・練習し、本番の戸惑いを減らす" },
+      lv2: { role: "自分のセリフや動きのタイミングを覚え、練習通りに発表をやり遂げる", env: "台本やキューカードを舞台袖や手元に配置し、緊張しても思い出せる工夫をする" },
+      lv3: { role: "発表の構成案づくり、ナレーションや司会、全体の流れの調整・振り返りを担う", env: "完璧な演技を求めすぎず、伝えたいメッセージが伝わる構成に絞る" }
+    },
+    {
+      cat: "交流学習・協働企画",
+      title: "交流級の仲間とつながろう！合同ワークショップ企画",
+      group: "支援学級と交流級の生徒が互いを尊重し、一緒に楽しめる活動を協働で運営する",
+      jiritsu: "【人間関係の形成・コミュニケーション】多様な他者と関わり、分かりやすく伝える工夫をする",
+      kyoka: "【道徳・国語・家庭】ルールや進め方の説明、協力して作る工作やレクリエーション",
+      lv1: { role: "一緒にできるシンプルなゲームや制作に参加し、笑顔や合図で交流を楽しむ", env: "交流相手との距離や活動時間を適切に設定し、疲れすぎる前に切り上げられるようにする" },
+      lv2: { role: "説明カードや見本を見せながら、交流する友達にルールや作り方を伝える", env: "伝える内容を1〜2点に絞り、指さしや実物を活用して分かりやすくする" },
+      lv3: { role: "合同活動の進行やグループまとめを担い、互いの良さを引き出す関わりをする", env: "進行台本を用意し、場の空気を読みすぎて抱え込みすぎないようサポートする" }
+    }
+  ],
+  "11月": [
+    {
+      cat: "社会生活・金銭と公共利用",
+      title: "ミッションクリアを目指せ！校外お買い物＆公共交通機関",
+      group: "グループで行動計画を共有し、公共マナーを守りながら協力してミッションを達成する",
+      jiritsu: "【環境の把捉・コミュニケーション】店舗や公共交通のルールを理解し、適切に行動・依頼する",
+      kyoka: "【数学・社会・国語】予算内の計算や支払い、路線や時刻表の確認、丁寧なやり取り",
+      lv1: { role: "お買い物カードを渡す、品物をカゴに入れる、ICカードや切符の受け渡しを行う", env: "移動距離や混雑時間を避けた計画にし、バリアフリーや休憩場所を事前確保" },
+      lv2: { role: "決められた予算内で品物を選び、レジでお金を支払ってお釣りやレシートを受け取る", env: "小銭や千円札を整理し、繰り上げ払い等の分かりやすい方法で計算負担を引き算" },
+      lv3: { role: "複数品目の合計・お釣り計算、時刻表や乗り換えの確認、グループの引率・記録を担う", env: "売り切れや混雑時の代替案（第2候補・別ルート）を事前に決めてパニックを防ぐ" }
+    },
+    {
+      cat: "地域交流・ボランティア",
+      title: "地域のためにできること！クリーン作戦＆地域貢献プロジェクト",
+      group: "地域の環境や人々に関心をもち、みんなで力を合わせて住みよい環境づくりに貢献する",
+      jiritsu: "【環境の把捉・身体の動き】安全に配慮しながら清掃や奉仕活動に取り組み、達成感を得る",
+      kyoka: "【社会・家庭・保健体育】地域の環境やごみの分別、安全な道具の使い方とマナー",
+      lv1: { role: "拾いやすい場所でのごみ拾いや、袋持ち・分別シールの貼り付けなどの活動", env: "危険物（ガラス・鋭利なもの等）に触れないようトングや手袋を工夫し、安全を最優先" },
+      lv2: { role: "可燃・不燃・資源などの分別ルールを確認しながら、清掃や整備に取り組む", env: "分別基準を写真や色分けで明示し、迷った時の確認ルールを決めておく" },
+      lv3: { role: "清掃エリアの計画や分別ルールの説明、活動の記録や地域への感謝のまとめを担う", env: "作業範囲を広げすぎず、時間内に達成できる現実的な範囲に設定する" }
+    },
+    {
+      cat: "職業・キャリア教育",
+      title: "働くってどういうこと？職場見学・仕事調べプロジェクト",
+      group: "見学や調べたことを共有し、働く上で大切な力や工夫についてみんなで考え合う",
+      jiritsu: "【自己の理解・コミュニケーション】自分の得意や心地よい環境を知り、質問や挨拶を伝える",
+      kyoka: "【国語・社会・家庭】職業の種類や仕事内容の調べ方、礼儀や報告の表現、まとめ",
+      lv1: { role: "働く場の雰囲気や音・動きを体感し、挨拶や見学の振り返りに参加する", env: "見学先での滞在時間や刺激量を調整し、疲れた時に休めるスペースを確保" },
+      lv2: { role: "仕事の手順や道具の工夫を聞き取り、ワークシートに記録して感想をまとめる", env: "記録シートを穴埋め・選択式にし、書くことの負担を引き算して聞くことに集中させる" },
+      lv3: { role: "事前質問の作成やインタビュー、見学後のまとめ発表や進路へのつながりの整理を担う", env: "質問項目を3つ程度に絞り、相手の話を遮らず最後まで聞けるようサポートする" }
+    }
+  ],
+  "12月": [
+    {
+      cat: "冬の生活・自己評価",
+      title: "2学期の成長を振り返ろう！マイ成長ポートフォリオ＆冬支度",
+      group: "2学期の頑張りを互いにお祝いし、温かい雰囲気の中で冬休みへの見通しをもつ",
+      jiritsu: "【自己の理解・健康の保持】自分の成長を肯定的に捉え、冬の寒さや感染症に備える",
+      kyoka: "【国語・保健体育・家庭】振り返り文の作成、冬の防寒・衛生管理、冬休みの予定確認",
+      lv1: { role: "2学期の写真や作品を見て好きなものを選び、温かい飲み物や防寒の心地よさを感じる", env: "振り返り項目を絞り、できたことや楽しかった経験に焦点を当てて自己肯定感を育む" },
+      lv2: { role: "2学期にできるようになったことや頑張ったことを選び、懇談や振り返りシートにまとめる", env: "「〇〇ができるようになった」の文例を用意し、文章作成のハードルを下げる" },
+      lv3: { role: "2学期の目標達成度を振り返り、三者懇談やクラス発表に向けたまとめ資料を作成する", env: "課題だけでなく「うまくいった工夫」も必ず言語化し、前向きな次期目標につなげる" }
+    },
+    {
+      cat: "季節行事・協働企画",
+      title: "みんなでお疲れさま会！ウィンターフェスティバル企画",
+      group: "役割分担をして準備・運営を行い、クラス全員が楽しめる会をつくり上げる",
+      jiritsu: "【人間関係の形成・心理的な安定】ルールや順番を守り、興奮しすぎず楽しく参加する",
+      kyoka: "【音楽・美術・算数・国語】プログラムや招待状の作成、ゲームや出し物の準備・進行",
+      lv1: { role: "飾り付けのパーツ貼りや、ゲームの参加・景品やカードの手渡しなどを楽しむ", env: "騒がしくなりすぎないよう音量や進行を調整し、落ち着ける居場所も確保しておく" },
+      lv2: { role: "プログラムや招待状の作成、ゲームの係や片付けを役割表に沿って行う", env: "係の仕事を1人1つに絞り、当日の流れを視覚表でいつでも確認できるようにする" },
+      lv3: { role: "会の司会進行やタイムキーパー、全体ルールの調整やまとめの挨拶を担う", env: "進行台本とタイムスケジュールを用意し、予定通りに進まなくても柔軟に対応できる支えを入れる" }
+    },
+    {
+      cat: "情報モラル・冬休みの過ごし方",
+      title: "ネットやスマホと上手につきあおう！冬の安全ルールづくり",
+      group: "身近なトラブル事例をもとに話し合い、クラスや自分に合った安全な使い方を考える",
+      jiritsu: "【心理的な安定・コミュニケーション】ネット上のやり取りや長時間利用による心身の不調を防ぐ",
+      kyoka: "【道徳・情報・国語】個人情報やネットマナーの理解、相手の気持ちを想像した言葉選び",
+      lv1: { role: "端末や画面を見る時間の区切りや、楽しい使い方・気をつけることを絵カードで学ぶ", env: "難しい専門用語を使わず、具体的な行動（見る・やめる・相談する）に絞って伝える" },
+      lv2: { role: "「OK・NG」の事例カードを見て判断し、冬休みのスマホ・ゲームのルールを決める", env: "クイズ形式で楽しく学べるようにし、責める口調を避けて一緒にルールをつくる" },
+      lv3: { role: "SNSでの誤解やトラブルを防ぐ工夫を考え、ルールや注意喚起のまとめを作成する", env: "「イラッとしたら返信せず時間をおく」など、実践しやすい具体的行動に落とし込む" }
+    }
+  ],
+  "1月": [
+    {
+      cat: "新年の目標・キャリアの基礎",
+      title: "新しい年の「マイ目標」宣言＆校内お仕事スキルアップ",
+      group: "新年の抱負を共有し、3学期や次のステージに向けた前向きな空気をつくる",
+      jiritsu: "【自己の理解・環境の把捉】目標をもって主体的に取り組み、作業環境を整えて集中する",
+      kyoka: "【国語・技術・家庭】目標の表現、校内作業の効率化や正確性、整理整頓の継続",
+      lv1: { role: "新年の挨拶や好きな活動・作業に取り組み、寒さに負けず心地よく学校生活を再開する", env: "冬休み明けの生活リズムを整えることを最優先にし、無理な課題や急な変化を引き算" },
+      lv2: { role: "3学期の目標を1つ決め、シュレッダー・チラシ折り・清掃などの作業を手順通りに進める", env: "「未完了→作業→完了」の動線を明確にし、自分のペースで達成感を積み重ねる" },
+      lv3: { role: "進級・進学を見据えた目標を立て、作業の報連相や手順の改善・後輩への指導を担う", env: "目標を欲張りすぎず、測定・振り返りしやすい具体的な行動目標に整理する" }
+    },
+    {
+      cat: "伝統文化・冬の遊び",
+      title: "日本の伝統文化にふれよう！書き初め＆お正月遊び体験",
+      group: "伝統的な遊びや書に親しみ、季節の文化を味わいながらみんなで楽しく交流する",
+      jiritsu: "【身体の動き・心理的な安定】筆遣いや遊びの動作を楽しみ、集中力や落ち着いた心を養う",
+      kyoka: "【国語・美術・音楽】書写や言葉の意味、伝承遊びのルールや工夫",
+      lv1: { role: "筆やクレヨン・コマやかるた等に触れ、線の動きや色の広がり・遊びの感覚を楽しむ", env: "細かな文字や厳しい評価を引き算し、表現すること・遊ぶこと自体を楽しめる場にする" },
+      lv2: { role: "好きな言葉や目標を丁寧に書き、ルールに沿って伝統遊びやかるた・すごろくを楽しむ", env: "お手本やルールカードを分かりやすく提示し、勝ち負けにこだわりすぎない工夫をする" },
+      lv3: { role: "言葉の意味を調べたり、遊びのルール説明や進行・作品展示のまとめを担う", env: "説明や進行の役割を無理なく分担し、全員が楽しめる雰囲気づくりを大切にする" }
+    },
+    {
+      cat: "生活環境・冬の健康管理",
+      title: "冬を元気に乗り切ろう！室温・湿度管理＆あったかレシピ",
+      group: "教室の環境や体調に気を配り、みんなで快適に過ごせる工夫を実践する",
+      jiritsu: "【健康の保持・環境の把捉】寒さや乾燥による体調変化に気づき、環境や服装を調整する",
+      kyoka: "【理科・家庭・保健体育】温度・湿度の管理、温かい食事や栄養、感染症予防の習慣",
+      lv1: { role: "温かい飲み物やスープを味わったり、ひざ掛けや室温の心地よさを感じたりする", env: "寒さで体がこわばりやすいため、活動前のウォームアップや温かい環境を十分に整える" },
+      lv2: { role: "温湿度計を見て換気や暖房の工夫を考えたり、簡単な温かい調理や配膳を行ったりする", env: "数値の見方や目安を分かりやすく示し、安全にできる作業工程に絞って任せる" },
+      lv3: { role: "冬の健康・感染予防のポイントをまとめ、クラスへの呼びかけや調理計画の進行を担う", env: "押し付けにならない伝え方を工夫し、実践しやすい生活習慣として提案する" }
+    }
+  ],
+  "2月": [
+    {
+      cat: "進路学習・キャリア教育",
+      title: "未来への一歩を考えよう！先輩の進路を知る＆仕事調べ",
+      group: "それぞれの進路や興味を尊重し、互いの将来を応援し合う温かい関係をつくる",
+      jiritsu: "【自己の理解・コミュニケーション】自分の強みや必要な支援を知り、進路や将来について考える",
+      kyoka: "【社会・国語・家庭】高等部・支援学校・就労などの進路情報、質問やまとめの表現",
+      lv1: { role: "卒業後や先輩たちの写真・動画を見て、安心できる環境や好きな活動のイメージをもつ", env: "難しい制度説明を引き算し、写真や動画など視覚的に分かりやすい情報を中心に構成" },
+      lv2: { role: "進路先や仕事の内容を調べ、自分がやってみたいことや大切にしたいことを選ぶ", env: "選択肢を整理したワークシートを使い、自分の思いを言葉やカードで表せるようにする" },
+      lv3: { role: "進路先の特徴や必要な力を調べ、質問や発表・次の学年への引き継ぎ資料づくりを担う", env: "不安や焦りを煽らないよう、今できる小さなステップに焦点を当てて整理する" }
+    },
+    {
+      cat: "情報活用・メディアリテラシー",
+      title: "情報の見方・使い方を磨こう！調べ学習＆プレゼン制作",
+      group: "調べた情報や工夫を共有し、分かりやすく伝える力をみんなで高め合う",
+      jiritsu: "【環境の把捉・コミュニケーション】必要な情報を選び取り、相手に伝わる形で表現する",
+      kyoka: "【国語・社会・技術】情報の取捨選択、図や表・スライドの活用、発表と聞き方のマナー",
+      lv1: { role: "興味のあるテーマの写真や画像を選び、画面を指さしたりタップしたりして伝える", env: "検索や操作の複雑さを引き算し、あらかじめ用意した安全な素材から選べるようにする" },
+      lv2: { role: "調べた情報から大切な項目を選び、スライドやポスターにまとめて発表する", env: "情報の詰め込みすぎを防ぎ、1枚につき1メッセージのシンプルな構成にする" },
+      lv3: { role: "複数の情報を見比べて整理し、根拠や工夫を交えた発表や質疑応答を行う", env: "情報の正確さや分かりやすさを意識しつつ、聞き手の反応に合わせて調整できるようにする" }
+    },
+    {
+      cat: "学級環境・次年度準備",
+      title: "次の学年にバトンをつなごう！学級ルール＆教材整理",
+      group: "1年間の学級の歩みを振り返り、次の学年や新入生へ引き継ぐ工夫をみんなで考える",
+      jiritsu: "【環境の把捉・自己の理解】これまでの環境を振り返り、自分に合った支援や仕組みを整理する",
+      kyoka: "【国語・家庭・道徳】引き継ぎ事項の整理、教材や備品の点検・分類、感謝の表現",
+      lv1: { role: "使った道具や教材の片付け・仕分けを手伝い、慣れ親しんだ学級での時間を味わう", env: "急な環境変化や別れの不安に配慮し、安心できるルーティンを維持しながら進める" },
+      lv2: { role: "教材やファイルの整理を行い、「次の人に分かりやすい工夫」を付箋やメモで残す", env: "整理の基準を明確にし、達成感を得ながら1年間のまとめにつなげる" },
+      lv3: { role: "学級の引き継ぎシートやルール改善案を作成し、次年度に向けた提案やまとめを行う", env: "批判や不満ではなく、「より良くなる工夫・引き算できること」という前向きな視点で整理" }
+    }
+  ],
+  "3月": [
+    {
+      cat: "まとめ・卒業と進級への移行支援",
+      title: "1年間の成長ダイアリー＆卒業・進級おめでとうの会",
+      group: "1年間の成長を全員で讃え合い、卒業生・進級生それぞれの門出を温かく送り出す",
+      jiritsu: "【自己の理解・心理的な安定】自分の成長を実感し、新しい環境への期待と安心感をもつ",
+      kyoka: "【国語・音楽・美術・道徳】成長の振り返り、メッセージやプレゼント制作、式や会の表現",
+      lv1: { role: "1年間の思い出アルバムやプレゼントに触れ、温かい拍手や言葉の中で達成感を味わう", env: "4月の新しい環境・先生・教室の写真や動画を事前に見せ、新年度への不安を引き算" },
+      lv2: { role: "1年間でできるようになったことをまとめ、感謝の言葉やメッセージを形にして伝える", env: "発表や制作の負荷を適切に調整し、一人ひとりが無理なく主役になれるようにする" },
+      lv3: { role: "会の司会進行や1年間の振り返りプレゼン、卒業生・在校生へのメッセージ発表を担う", env: "原稿やスライドの補助を用意し、自分の言葉でしっかり思いを届けられる場をつくる" }
+    },
+    {
+      cat: "移行支援・新年度プロファイル",
+      title: "新しいステージへ！「私の支援・引き継ぎシート」づくり",
+      group: "自分のトリセツや支援の工夫を振り返り、新しい担任や環境にスムーズにつなぐ",
+      jiritsu: "【自己の理解・コミュニケーション】自分の特性や必要な配慮を整理し、周囲に伝える土台をつくる",
+      kyoka: "【国語・道徳】自己分析と表現、必要な情報の整理と伝達",
+      lv1: { role: "安心できる関わり方や好きなこと・苦手なことを整理し、新しい先生に伝える準備をする", env: "本人が言葉にしにくい部分は、保護者や担任の観察をもとに分かりやすく視覚化" },
+      lv2: { role: "「得意なこと・苦手なこと・助けてほしいこと」を整理し、引き継ぎシートにまとめる", env: "項目をシンプルにし、本人が納得感をもって自分のことを語れるようにする" },
+      lv3: { role: "自分の特性や合理的配慮の希望を言語化し、新しい環境での目標や工夫をまとめる", env: "「できないこと」だけでなく「こうすればできる」という前向きな視点で整理する" }
+    },
+    {
+      cat: "お別れ遠足・思い出づくり",
+      title: "1年間の感謝を込めて！お別れ校外学習＆思い出アルバム",
+      group: "最後の校外学習をみんなで楽しみ、互いの絆を深めながら素敵な思い出をつくる",
+      jiritsu: "【環境の把捉・人間関係の形成】公共の場でのルールを守り、仲間と楽しく過ごす",
+      kyoka: "【社会・数学・国語・美術】行き先や予算の確認、写真の整理や思い出アルバムの制作",
+      lv1: { role: "安心できるペースで外出や活動を楽しみ、仲間との触れ合いや季節の空気を味わう", env: "混雑や長時間の移動を引き算し、全員が笑顔で参加できるコース・時間設定にする" },
+      lv2: { role: "約束や予算を守って活動し、撮った写真を使って思い出のページを完成させる", env: "活動の流れを事前に共有し、当日迷わず動けるように視覚支援を整える" },
+      lv3: { role: "当日のスケジュール管理やグループのまとめ、思い出アルバムの編集・進行を担う", env: "係の仕事を抱え込みすぎず、自分自身も楽しめる余白を残して計画する" }
+    }
+  ]
+};
+
+let currentMonth = "";
+let currentCandidateIdx = 0;
+let planData = {};
+let metaData = { className: "", studentMemo: "", themeMemo: "" };
+
+function loadStorage() {
+  try {
+    const savedPlan = localStorage.getItem("chugaku_seikatsu_latest_plan");
+    if (savedPlan) planData = JSON.parse(savedPlan);
+    const savedMeta = localStorage.getItem("chugaku_seikatsu_latest_meta");
+    if (savedMeta) {
+      metaData = JSON.parse(savedMeta);
+      document.getElementById("className").value = metaData.className || "";
+      document.getElementById("studentMemo").value = metaData.studentMemo || "";
+      document.getElementById("themeMemo").value = metaData.themeMemo || "";
+    }
+  } catch (e) { planData = {}; }
+}
+
+function saveStorage() {
+  try { localStorage.setItem("chugaku_seikatsu_latest_plan", JSON.stringify(planData)); } catch (e) {}
+}
+
+function saveMeta() {
+  metaData.className = document.getElementById("className").value;
+  metaData.studentMemo = document.getElementById("studentMemo").value;
+  metaData.themeMemo = document.getElementById("themeMemo").value;
+  try { localStorage.setItem("chugaku_seikatsu_latest_meta", JSON.stringify(metaData)); } catch (e) {}
+}
+
+function renderTable() {
+  const tbody = document.getElementById("planBody");
+  tbody.innerHTML = "";
+  
+  MONTHS.forEach(m => {
+    const tr = document.createElement("tr");
+    const units = planData[m] || [];
+    
+    let unitsHtml = units.map((u, idx) => {
+      let levelsHtml = '<div class="levels-grid">';
+      if (u.lv1) {
+        levelsHtml += `
+          <div class="lv-box lv-1">
+            <span class="lv-badge">🔴 重度・基礎ステップ</span>
+            <div class="lv-role">取り組み：${escapeHtml(u.lv1.role)}</div>
+            <div class="lv-env">💡 引き算設計：${escapeHtml(u.lv1.env)}</div>
+          </div>`;
+      }
+      if (u.lv2) {
+        levelsHtml += `
+          <div class="lv-box lv-2">
+            <span class="lv-badge">🟢 中度・構造化ステップ</span>
+            <div class="lv-role">取り組み：${escapeHtml(u.lv2.role)}</div>
+            <div class="lv-env">💡 引き算設計：${escapeHtml(u.lv2.env)}</div>
+          </div>`;
+      }
+      if (u.lv3) {
+        levelsHtml += `
+          <div class="lv-box lv-3">
+            <span class="lv-badge">🔵 軽度・発展ステップ</span>
+            <div class="lv-role">取り組み：${escapeHtml(u.lv3.role)}</div>
+            <div class="lv-env">💡 引き算設計：${escapeHtml(u.lv3.env)}</div>
+          </div>`;
+      }
+      levelsHtml += '</div>';
+
+      return `
+        <div class="unit-card">
+          <button class="del-unit" onclick="deleteUnit('${m}', ${idx})" title="削除">✕</button>
+          <div class="unit-header">
+            ${u.cat ? `<span class="unit-tag">${escapeHtml(u.cat)}</span>` : ""}
+            <div class="unit-title">${escapeHtml(u.title)}</div>
+            <div class="unit-perspectives">
+              <div class="p-row"><span class="p-lbl">【集団参加】</span>${escapeHtml(u.group || "")}</div>
+              <div class="p-row"><span class="p-lbl">【自立活動】</span>${escapeHtml(u.jiritsu || "")}</div>
+              <div class="p-row"><span class="p-lbl">【各教科等を合わせた指導】</span>${escapeHtml(u.kyoka || "")}</div>
+            </div>
+          </div>
+          ${levelsHtml}
+        </div>
+      `;
+    }).join("");
+
+    tr.innerHTML = `
+      <td class="month-col">${m}</td>
+      <td>
+        ${unitsHtml}
+        <button class="add-btn" onclick="openModal('${m}')">＋ ${m}の生活単元（3候補から選択・レベル設定）を追加する</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function applyCandidateToForm(month, idx) {
+  currentCandidateIdx = idx;
+  const candidates = PROPOSALS[month] || [];
+  const p = candidates[idx];
+  if (!p) return;
+
+  document.querySelectorAll(".candidate-card").forEach((el, i) => {
+    if (i === idx) el.classList.add("selected");
+    else el.classList.remove("selected");
+  });
+
+  document.getElementById("inputTitle").value = p.title;
+  document.getElementById("inputTitle").dataset.cat = p.cat;
+  document.getElementById("inGroup").value = p.group;
+  document.getElementById("inJiritsu").value = p.jiritsu;
+  document.getElementById("inKyoka").value = p.kyoka;
+
+  document.getElementById("useLv1").checked = true;
+  document.getElementById("inLv1Role").value = p.lv1.role;
+  document.getElementById("inLv1Env").value = p.lv1.env;
+
+  document.getElementById("useLv2").checked = true;
+  document.getElementById("inLv2Role").value = p.lv2.role;
+  document.getElementById("inLv2Env").value = p.lv2.env;
+
+  document.getElementById("useLv3").checked = true;
+  document.getElementById("inLv3Role").value = p.lv3.role;
+  document.getElementById("inLv3Env").value = p.lv3.env;
+}
+
+function openModal(month) {
+  currentMonth = month;
+  document.getElementById("modalTitle").innerText = `${month}の生活単元アイデア（3つの候補から選択）`;
+  
+  const list = document.getElementById("candidateList");
+  list.innerHTML = "";
+  
+  const candidates = PROPOSALS[month] || [];
+  candidates.forEach((p, idx) => {
+    const div = document.createElement("div");
+    div.className = "candidate-card" + (idx === 0 ? " selected" : "");
+    div.innerHTML = `
+      <div>
+        <span class="cand-num">候補 ${idx + 1}：${escapeHtml(p.cat)}</span>
+        <strong>${escapeHtml(p.title)}</strong>
+        <div class="c-desc">${escapeHtml(p.group)}</div>
+      </div>
+      <div style="font-size:0.72rem; color:var(--accent); font-weight:bold; margin-top:8px;">▶ この案を選ぶ</div>
+    `;
+    div.onclick = () => applyCandidateToForm(month, idx);
+    list.appendChild(div);
+  });
+
+  if (candidates.length > 0) {
+    applyCandidateToForm(month, 0);
+  }
+
+  document.getElementById("modalOverlay").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("modalOverlay").style.display = "none";
+}
+
+function saveUnit() {
+  const title = document.getElementById("inputTitle").value.trim();
+  const cat = document.getElementById("inputTitle").dataset.cat || "選択単元";
+  const group = document.getElementById("inGroup").value.trim();
+  const jiritsu = document.getElementById("inJiritsu").value.trim();
+  const kyoka = document.getElementById("inKyoka").value.trim();
+  if (!title) { alert("単元名を入力してください"); return; }
+
+  const unitObj = { cat, title, group, jiritsu, kyoka };
+  if (document.getElementById("useLv1").checked) {
+    unitObj.lv1 = { role: document.getElementById("inLv1Role").value.trim(), env: document.getElementById("inLv1Env").value.trim() };
+  }
+  if (document.getElementById("useLv2").checked) {
+    unitObj.lv2 = { role: document.getElementById("inLv2Role").value.trim(), env: document.getElementById("inLv2Env").value.trim() };
+  }
+  if (document.getElementById("useLv3").checked) {
+    unitObj.lv3 = { role: document.getElementById("inLv3Role").value.trim(), env: document.getElementById("inLv3Env").value.trim() };
+  }
+
+  if (!planData[currentMonth]) planData[currentMonth] = [];
+  planData[currentMonth].push(unitObj);
+  saveStorage();
+  closeModal();
+  renderTable();
+}
+
+function deleteUnit(month, idx) {
+  planData[month].splice(idx, 1);
+  saveStorage();
+  renderTable();
+}
+
+function loadSampleAll() {
+  if (!confirm("4月〜3月の各月「候補1」をベースに、1年分の計画を一括セットしますか？（現在の入力は上書きされます）")) return;
+  planData = {};
+  MONTHS.forEach(m => {
+    if (PROPOSALS[m] && PROPOSALS[m][0]) {
+      const p = PROPOSALS[m][0];
+      planData[m] = [{
+        cat: p.cat,
+        title: p.title,
+        group: p.group,
+        jiritsu: p.jiritsu,
+        kyoka: p.kyoka,
+        lv1: { ...p.lv1 },
+        lv2: { ...p.lv2 },
+        lv3: { ...p.lv3 }
+      }];
+    }
+  });
+  saveStorage();
+  renderTable();
+}
+
+function clearAll() {
+  if (!confirm("入力内容をすべてリセットしますか？")) return;
+  planData = {};
+  metaData = { className: "", studentMemo: "", themeMemo: "" };
+  document.getElementById("className").value = "";
+  document.getElementById("studentMemo").value = "";
+  document.getElementById("themeMemo").value = "";
+  localStorage.removeItem("chugaku_seikatsu_latest_meta");
+  saveStorage();
+  renderTable();
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str).replace(/[&<>"']/g, function(m) {
+    switch (m) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      case "'": return '&#039;';
+    }
+  });
+}
+
+loadStorage();
+renderTable();
+</script>
+</body>
+</html>
